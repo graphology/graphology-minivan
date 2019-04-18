@@ -1,0 +1,6 @@
+/**
+ * Graphology Minivan
+ * ===================
+ *
+ * Library endpoint.
+ */
