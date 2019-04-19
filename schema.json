@@ -110,6 +110,28 @@
           }
         }
       }
+    },
+    "model": {
+      "title": "Model of the graph.",
+      "type": "object",
+      "properties": {
+        "defaultNodeColor": {
+          "title": "Name of the attribute to use for default node color.",
+          "type": "string"
+        },
+        "defaultNodeSize": {
+          "title": "Name of the attribute to use for default node size.",
+          "type": "string"
+        },
+        "nodeAttributes": {
+          "title": "Metadata about the nodes' attributes in the graph.",
+          "type": "object"
+        },
+        "edgeAttributes": {
+          "title": "Metadata about the edges' attributes in the graph.",
+          "type": "object"
+        }
+      }
     }
   }
 }
