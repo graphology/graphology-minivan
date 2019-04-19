@@ -227,6 +227,14 @@
                     "title": "Color scale.",
                     "type": "string",
                     "enum": ["interpolateCubehelixDefault", "interpolateYlOrBr"]
+                  },
+                  "truncateScale": {
+                    "title": "Whether to truncate the scale?",
+                    "type": "boolean"
+                  },
+                  "invertScale": {
+                    "title": "Whether to invert the scale?",
+                    "type": "boolean"
                   }
                 }
               },
@@ -438,6 +446,14 @@
                     "title": "Color scale.",
                     "type": "string",
                     "enum": ["interpolateCubehelixDefault", "interpolateYlOrBr"]
+                  },
+                  "truncateScale": {
+                    "title": "Whether to truncate the scale?",
+                    "type": "boolean"
+                  },
+                  "invertScale": {
+                    "title": "Whether to invert the scale?",
+                    "type": "boolean"
                   }
                 }
               },

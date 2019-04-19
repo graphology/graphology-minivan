@@ -32,11 +32,22 @@ if (bundle.defaultNodeSize)
 if (bundle.defaultEdgeSize)
   newBundle.model.defaultEdgeSize = bundle.defaultEdgeSize;
 
-newBundle.graph = {
-  settings: bundle.graphSettings,
-  attributes: bundle.g.attributes,
-  nodes: bundle.g.nodes,
-  edges: bundle.g.edges
-};
+if (bundle.edgeAttributes) {
+  newBundle.model.edgeAttributes = bundle.edgeAttributes.map(function(attr) {
+    if (attr.type === 'partition')
+      return 'TODO';
+
+    delete attr.data;
+
+    return attr;
+  });
+}
+
+// newBundle.graph = {
+//   settings: bundle.graphSettings,
+//   attributes: bundle.g.attributes,
+//   nodes: bundle.g.nodes,
+//   edges: bundle.g.edges
+// };
 
 console.log(JSON.stringify(newBundle, null, 2));
