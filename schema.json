@@ -2,12 +2,114 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Minivan Graph Bundle",
   "description": "A file describing both a graph's data as well as elementes related to its visual grammar.",
+  "version": "0.1.0",
   "additionalProperties": false,
   "type": "object",
   "properties": {
     "title": {
-      "title": "Title",
+      "title": "Title.",
       "type": "string"
+    },
+    "authors": {
+      "title": "List of authors.",
+      "type": "array",
+      "items": {
+        "title": "Author.",
+        "type": "string"
+      }
+    },
+    "description": {
+      "title": "Description of the bundled graph.",
+      "type": "string"
+    },
+    "url": {
+      "title": "Url for the graph.",
+      "type": "string",
+      "format": "uri"
+    },
+    "bundleVersion": {
+      "title": "Version of the bundle used.",
+      "type": "string"
+    },
+    "consolidated": {
+      "title": "Whether the bundle has been consolidated or not.",
+      "type": "boolean"
+    },
+    "date": {
+      "title": "Date.",
+      "type": "string",
+      "format": "date"
+    },
+    "graph": {
+      "title": "Graph data.",
+      "type": "object",
+      "properties": {
+        "settings": {
+          "title": "Graph settings.",
+          "type": "object",
+          "properties": {
+            "type": {
+              "title": "Graph type.",
+              "type": "string",
+              "enum": ["mixed", "directed", "undirected"]
+            },
+            "multi": {
+              "title": "MultiGraph?",
+              "type": "boolean"
+            }
+          }
+        },
+        "attributes": {
+          "title": "Graph-level attributes.",
+          "type": "object"
+        },
+        "nodes": {
+          "title": "List of nodes.",
+          "type": "array",
+          "items": {
+            "title": "Node.",
+            "type": "object",
+            "properties": {
+              "key": {
+                "title": "Node's key.",
+                "type": "string"
+              },
+              "attributes": {
+                "title": "Node's attributes.",
+                "type": "object"
+              }
+            },
+            "required": ["key"]
+          }
+        },
+        "edges": {
+          "title": "List of edges.",
+          "type": "array",
+          "items": {
+            "title": "Edge.",
+            "type": "object",
+            "properties": {
+              "key": {
+                "title": "Edge's key.",
+                "type": "string"
+              },
+              "source": {
+                "title": "Edge's source node.",
+                "type": "string"
+              },
+              "target": {
+                "title": "Edge's target node.",
+                "type": "string"
+              },
+              "attributes": {
+                "title": "Edge's attributes.",
+                "type": "object"
+              }
+            },
+            "required": ["source", "target"]
+          }
+        }
+      }
     }
   }
 }
