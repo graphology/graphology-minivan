@@ -341,6 +341,153 @@
               }
             ]
           }
+        },
+        "edgeAttributes": {
+          "title": "Metadata about the edges' attributes in the graph.",
+          "type": "object",
+          "additionalProperties": {
+            "title": "Edge attribute.",
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "title": "Edge attribute's id. Must be unique and a slug.",
+                    "type": "string"
+                  },
+                  "name": {
+                    "title": "Edge attribute's human-readable label.",
+                    "type": "string"
+                  },
+                  "count": {
+                    "title": "Number of edges having this attribute.",
+                    "type": "integer"
+                  },
+                  "type": {
+                    "title": "Type of attribute.",
+                    "type": "string",
+                    "enum": ["ranking-size"]
+                  },
+                  "integer": {
+                    "title": "Whether this number attribute contains integers.",
+                    "type": "boolean"
+                  },
+                  "min": {
+                    "title": "Minimum value.",
+                    "type": "number"
+                  },
+                  "max": {
+                    "title": "Maximum value.",
+                    "type": "number"
+                  },
+                  "areaScaling": {
+                    "title": "Size scale options.",
+                    "type": "object",
+                    "properties": {
+                      "min": {
+                        "title": "Scale minimum.",
+                        "type": "number"
+                      },
+                      "max": {
+                        "title": "Scale maximum.",
+                        "type": "number"
+                      },
+                      "interpolation": {
+                        "title": "Scale interpolation.",
+                        "type": "string",
+                        "enum": ["linear", "pow-2"]
+                      }
+                    }
+                  }
+                }
+              },
+
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "title": "Edge attribute's id. Must be unique and a slug.",
+                    "type": "string"
+                  },
+                  "name": {
+                    "title": "Edge attribute's human-readable label.",
+                    "type": "string"
+                  },
+                  "count": {
+                    "title": "Number of edges having this attribute.",
+                    "type": "integer"
+                  },
+                  "type": {
+                    "title": "Type of attribute.",
+                    "type": "string",
+                    "enum": ["ranking-color"]
+                  },
+                  "integer": {
+                    "title": "Whether this number attribute contains integers.",
+                    "type": "boolean"
+                  },
+                  "min": {
+                    "title": "Minimum value.",
+                    "type": "number"
+                  },
+                  "max": {
+                    "title": "Maximum value.",
+                    "type": "number"
+                  },
+                  "colorScale": {
+                    "title": "Color scale.",
+                    "type": "string",
+                    "enum": ["interpolateCubehelixDefault", "interpolateYlOrBr"]
+                  }
+                }
+              },
+
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "title": "Edge attribute's id. Must be unique and a slug.",
+                    "type": "string"
+                  },
+                  "name": {
+                    "title": "Edge attribute's human-readable label.",
+                    "type": "string"
+                  },
+                  "count": {
+                    "title": "Number of edges having this attribute.",
+                    "type": "integer"
+                  },
+                  "type": {
+                    "title": "Type of attribute.",
+                    "type": "string",
+                    "enum": ["partition"]
+                  },
+                  "modalities": {
+                    "title": "The attribute's modalities in case of partition.",
+                    "type": "object",
+                    "additionalProperties": {
+                      "title": "Attribute modality.",
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "title": "Modality's value.",
+                          "type": ["string", "number"]
+                        },
+                        "color": {
+                          "title": "The modality's partition color.",
+                          "type": "string"
+                        },
+                        "edges": {
+                          "title": "Number of edges having this modality for this attribute.",
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
         }
       }
     }
