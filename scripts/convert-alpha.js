@@ -1,7 +1,8 @@
+/* eslint no-console: 0 */
 // Script converting MiniVan alpha bundle to the current format
-const bundle = require(process.argv.slice(-1)[0]);
+var bundle = require(process.argv.slice(-1)[0]);
 
-const newBundle = {
+var newBundle = {
   title: bundle.title,
   description: bundle.description,
   consolidated: bundle.consolidated || false,
