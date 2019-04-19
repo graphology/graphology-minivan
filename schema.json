@@ -251,6 +251,16 @@
                     "type": "string",
                     "enum": ["partition"]
                   },
+                  "stats": {
+                    "title": "Attribute's precomputed statistics.",
+                    "type": "object",
+                    "properties": {
+                      "modularity": {
+                        "title": "Modularity score for this partition.",
+                        "type": "number"
+                      }
+                    }
+                  },
                   "modalities": {
                     "title": "The attribute's modalities in case of partition.",
                     "type": "object",
@@ -262,13 +272,45 @@
                           "title": "Modality's value.",
                           "type": ["string", "number"]
                         },
-                        "count": {
-                          "title": "Number of nodes having this modality for this attribute.",
-                          "type": "integer"
-                        },
                         "color": {
                           "title": "The modality's partition color.",
                           "type": "string"
+                        },
+                        "nodes": {
+                          "title": "Number of nodes having this modality for this attribute.",
+                          "type": "integer"
+                        },
+                        "internalEdges": {
+                          "title": "Number of edges between nodes from this modality.",
+                          "type": "integer"
+                        },
+                        "inboundEdges": {
+                          "title": "Number of edges goind to a node from this modality.",
+                          "type": "integer"
+                        },
+                        "outboundEdges": {
+                          "title": "Number of edges going from a node from this modality.",
+                          "type": "integer"
+                        },
+                        "externalEdges": {
+                          "title": "Number of edges between nodes from this modality and other nodes.",
+                          "type": "integer"
+                        },
+                        "internalNormalizedDensity": {
+                          "title": "Internal normalized density.",
+                          "type": "number"
+                        },
+                        "inboundNormalizedDensity": {
+                          "title": "Inbound normalized density.",
+                          "type": "number"
+                        },
+                        "outboundNormalizedDensity": {
+                          "title": "Outbound normalized density.",
+                          "type": "number"
+                        },
+                        "externalNormalizedDensity": {
+                          "title": "External normalized density.",
+                          "type": "number"
                         }
                       }
                     }
