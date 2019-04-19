@@ -249,48 +249,29 @@
                   "type": {
                     "title": "Type of attribute.",
                     "type": "string",
-                    "enum": ["ranking-size", "ranking-color", "partition"]
-                  },
-                  "integer": {
-                    "title": "Whether this number attribute contains integers.",
-                    "type": "boolean"
-                  },
-                  "min": {
-                    "title": "Minimum value.",
-                    "type": "number"
-                  },
-                  "max": {
-                    "title": "Maximum value.",
-                    "type": "number"
-                  },
-                  "areaScaling": {
-                    "title": "Size scale options.",
-                    "type": "object",
-                    "properties": {
-                      "min": {
-                        "title": "Scale minimum.",
-                        "type": "number"
-                      },
-                      "max": {
-                        "title": "Scale maximum.",
-                        "type": "number"
-                      },
-                      "interpolation": {
-                        "title": "Scale interpolation.",
-                        "type": "string",
-                        "enum": ["linear", "pow-2"]
-                      }
-                    }
-                  },
-                  "colorScale": {
-                    "title": "Color scale.",
-                    "type": "string",
-                    "enum": ["interpolateCubehelixDefault", "interpolateYlOrBr"]
+                    "enum": ["partition"]
                   },
                   "modalities": {
                     "title": "The attribute's modalities in case of partition.",
                     "type": "object",
-                    "additionalProperties": {}
+                    "additionalProperties": {
+                      "title": "Attribute modality.",
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "title": "Modality's value.",
+                          "type": ["string", "number"]
+                        },
+                        "count": {
+                          "title": "Number of nodes having this modality for this attribute.",
+                          "type": "integer"
+                        },
+                        "color": {
+                          "title": "The modality's partition color.",
+                          "type": "string"
+                        }
+                      }
+                    }
                   }
                 }
               }
