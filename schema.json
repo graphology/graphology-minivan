@@ -311,6 +311,28 @@
                         "externalNormalizedDensity": {
                           "title": "External normalized density.",
                           "type": "number"
+                        },
+                        "flow": {
+                          "title": "Modality's flow.",
+                          "type": "object",
+                          "additionalProperties": {
+                            "title": "Target property.",
+                            "type": "object",
+                            "properties": {
+                              "count": {
+                                "title": "Number of edges between modalities.",
+                                "type": "integer"
+                              },
+                              "expected": {
+                                "title": "Expected number of edges between modalities.",
+                                "type": "number"
+                              },
+                              "normalizedDensity": {
+                                "title": "Normalized edge density between modalities.",
+                                "type": "number"
+                              }
+                            }
+                          }
                         }
                       }
                     }
