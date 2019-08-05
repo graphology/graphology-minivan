@@ -1,5 +1,7 @@
 /* eslint no-console: 0 */
 // Script converting MiniVan alpha bundle to the current format
+require('util').inspect.defaultOptions.depth = null;
+
 var bundle = require(process.argv.slice(-1)[0]);
 
 var newBundle = {
@@ -34,8 +36,25 @@ if (bundle.defaultEdgeSize)
 
 if (bundle.edgeAttributes) {
   newBundle.model.edgeAttributes = bundle.edgeAttributes.map(function(attr) {
-    if (attr.type === 'partition')
-      return 'TODO';
+    if (attr.type === 'partition') {
+      const oldModalities = attr.modalities;
+
+      attr = {
+        id: attr.id,
+        name: attr.name,
+        count: attr.count,
+        type: 'partition',
+        modalities: {}
+      };
+
+      oldModalities.forEach(m => {
+        attr.modalities[m.value] = {
+          value: m.value,
+          color: m.color,
+          edges: m.count
+        };
+      });
+    }
 
     delete attr.data;
 
