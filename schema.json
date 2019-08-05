@@ -229,7 +229,33 @@
                   "colorScale": {
                     "title": "Color scale.",
                     "type": "string",
-                    "enum": ["interpolateCubehelixDefault", "interpolateYlOrBr"]
+                    "enum": [
+                      "interpolateGreys",
+                      "interpolateGreens",
+                      "interpolateBlues",
+                      "interpolatePurples",
+                      "interpolateReds",
+                      "interpolateOranges",
+                      "interpolateViridis",
+                      "interpolateInferno",
+                      "interpolateMagma",
+                      "interpolatePlasma",
+                      "interpolateWarm",
+                      "interpolateCool",
+                      "interpolateCubehelixDefault",
+                      "interpolateBuGn",
+                      "interpolateBuPu",
+                      "interpolateGnBu",
+                      "interpolateOrRd",
+                      "interpolatePuBuGn",
+                      "interpolatePuBu",
+                      "interpolatePuRd",
+                      "interpolateRdPu",
+                      "interpolateYlGnBu",
+                      "interpolateYlGn",
+                      "interpolateYlOrBr",
+                      "interpolateYlOrRd"
+                    ]
                   },
                   "truncateScale": {
                     "title": "Whether to truncate the scale?",
@@ -448,7 +474,33 @@
                   "colorScale": {
                     "title": "Color scale.",
                     "type": "string",
-                    "enum": ["interpolateCubehelixDefault", "interpolateYlOrBr"]
+                    "enum": [
+                      "interpolateGreys",
+                      "interpolateGreens",
+                      "interpolateBlues",
+                      "interpolatePurples",
+                      "interpolateReds",
+                      "interpolateOranges",
+                      "interpolateViridis",
+                      "interpolateInferno",
+                      "interpolateMagma",
+                      "interpolatePlasma",
+                      "interpolateWarm",
+                      "interpolateCool",
+                      "interpolateCubehelixDefault",
+                      "interpolateBuGn",
+                      "interpolateBuPu",
+                      "interpolateGnBu",
+                      "interpolateOrRd",
+                      "interpolatePuBuGn",
+                      "interpolatePuBu",
+                      "interpolatePuRd",
+                      "interpolateRdPu",
+                      "interpolateYlGnBu",
+                      "interpolateYlGn",
+                      "interpolateYlOrBr",
+                      "interpolateYlOrRd"
+                    ]
                   },
                   "truncateScale": {
                     "title": "Whether to truncate the scale?",

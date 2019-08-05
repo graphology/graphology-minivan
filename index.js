@@ -4,6 +4,7 @@
  *
  * Library endpoint.
  */
+var slugify = require('./slugify.js');
 
 /**
  * Constants.
