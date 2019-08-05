@@ -107,6 +107,10 @@
               "attributes": {
                 "title": "Edge's attributes.",
                 "type": "object"
+              },
+              "undirected": {
+                "title": "Whether the edge is undirected.",
+                "type": "boolean"
               }
             },
             "required": ["source", "target"]
