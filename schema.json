@@ -134,7 +134,7 @@
         "nodeAttributes": {
           "title": "Metadata about the nodes' attributes in the graph.",
           "type": "object",
-          "additionalProperties": {
+          "items": {
             "title": "Node attribute.",
             "oneOf": [
               {
@@ -353,7 +353,7 @@
         "edgeAttributes": {
           "title": "Metadata about the edges' attributes in the graph.",
           "type": "object",
-          "additionalProperties": {
+          "items": {
             "title": "Edge attribute.",
             "oneOf": [
               {

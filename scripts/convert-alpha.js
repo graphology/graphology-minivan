@@ -34,10 +34,63 @@ if (bundle.defaultNodeSize)
 if (bundle.defaultEdgeSize)
   newBundle.model.defaultEdgeSize = bundle.defaultEdgeSize;
 
+if (bundle.nodeAttributes) {
+  newBundle.model.nodeAttributes = bundle.nodeAttributes.map(function(attr) {
+    if (attr.type === 'partition') {
+      var oldModalities = attr.modalities,
+          data = attr.data;
+
+      attr = {
+        id: attr.id,
+        name: attr.name,
+        count: attr.count,
+        type: 'partition',
+        modalities: {},
+        stats: {
+          modularity: attr.data.stats.modularity
+        }
+      };
+
+      oldModalities.forEach(function(m) {
+        var matchingData = data.modalitiesIndex[m.value],
+            matchingFlow = data.modalityFlow[m.value];
+
+        var flow = {};
+
+        for (var k in matchingFlow)
+          flow[k] = {
+            count: matchingFlow[k].count,
+            expected: matchingFlow[k].expected,
+            normalizedDensity: matchingFlow[k].nd
+          };
+
+        attr.modalities[m.value] = {
+          value: m.value,
+          color: m.color,
+          nodes: m.count,
+          internalEdges: matchingData.internalLinks,
+          inboundEdges: matchingData.internalLinks,
+          outboundEdges: matchingData.outboundLinks,
+          externalEdges: matchingData.externalLinks,
+          internalNormalizedDensity: matchingData.internalNDensity,
+          inboundNormalizedDensity: matchingData.inboundNDensity,
+          outboundNormalizedDensity: matchingData.outboundNDensity,
+          externalNormalizedDensity: matchingData.externalNDensity,
+          flow: flow
+        };
+      });
+    }
+
+    delete attr.data;
+
+    return attr;
+  });
+}
+
 if (bundle.edgeAttributes) {
   newBundle.model.edgeAttributes = bundle.edgeAttributes.map(function(attr) {
     if (attr.type === 'partition') {
-      const oldModalities = attr.modalities;
+      var oldModalities = attr.modalities;
 
       attr = {
         id: attr.id,
@@ -47,7 +100,7 @@ if (bundle.edgeAttributes) {
         modalities: {}
       };
 
-      oldModalities.forEach(m => {
+      oldModalities.forEach(function(m) {
         attr.modalities[m.value] = {
           value: m.value,
           color: m.color,
@@ -62,11 +115,11 @@ if (bundle.edgeAttributes) {
   });
 }
 
-// newBundle.graph = {
-//   settings: bundle.graphSettings,
-//   attributes: bundle.g.attributes,
-//   nodes: bundle.g.nodes,
-//   edges: bundle.g.edges
-// };
+newBundle.graph = {
+  settings: bundle.graphSettings,
+  attributes: bundle.g.attributes,
+  nodes: bundle.g.nodes,
+  edges: bundle.g.edges
+};
 
 console.log(JSON.stringify(newBundle, null, 2));
