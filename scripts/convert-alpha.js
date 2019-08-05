@@ -1,5 +1,7 @@
 /* eslint no-console: 0 */
 // Script converting MiniVan alpha bundle to the current format
+var validate = require('../validate.js');
+
 require('util').inspect.defaultOptions.depth = null;
 
 var bundle = require(process.argv.slice(-1)[0]);
@@ -121,5 +123,12 @@ newBundle.graph = {
   nodes: bundle.g.nodes,
   edges: bundle.g.edges
 };
+
+var validationErrors = validate(newBundle);
+
+if (validationErrors) {
+  console.error(validationErrors);
+  process.exit(1);
+}
 
 console.log(JSON.stringify(newBundle, null, 2));

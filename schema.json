@@ -37,8 +37,7 @@
     },
     "date": {
       "title": "Date.",
-      "type": "string",
-      "format": "date"
+      "type": "string"
     },
     "graph": {
       "title": "Graph data.",
@@ -133,7 +132,7 @@
         },
         "nodeAttributes": {
           "title": "Metadata about the nodes' attributes in the graph.",
-          "type": "object",
+          "type": "array",
           "items": {
             "title": "Node attribute.",
             "oneOf": [
@@ -352,7 +351,7 @@
         },
         "edgeAttributes": {
           "title": "Metadata about the edges' attributes in the graph.",
-          "type": "object",
+          "type": "array",
           "items": {
             "title": "Edge attribute.",
             "oneOf": [
