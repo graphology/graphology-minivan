@@ -71,6 +71,8 @@ describe('graphology-minivan', function() {
       var errors = validate(bundle);
 
       assert(!errors);
+
+      console.log(bundle);
     });
   });
 });

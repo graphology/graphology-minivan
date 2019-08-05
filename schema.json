@@ -292,6 +292,10 @@
                     "type": "string",
                     "enum": ["partition"]
                   },
+                  "cardinality": {
+                    "title": "Number of modalities.",
+                    "type": "number"
+                  },
                   "stats": {
                     "title": "Attribute's precomputed statistics.",
                     "type": "object",
@@ -536,6 +540,10 @@
                     "title": "Type of attribute.",
                     "type": "string",
                     "enum": ["partition"]
+                  },
+                  "cardinality": {
+                    "title": "Number of modalities.",
+                    "type": "number"
                   },
                   "modalities": {
                     "title": "The attribute's modalities in case of partition.",

@@ -4,7 +4,8 @@
  *
  * Library endpoint.
  */
-var slugify = require('./slugify.js');
+var slugify = require('./slugify.js'),
+    palettes = require('./palettes.js');
 
 /**
  * Constants.
@@ -42,6 +43,7 @@ var TYPE_TO_ATTR_TYPE = {
 };
 
 var DEFAULT_INTERPOLATION = 'linear';
+var DEFAULT_COLOR = '#666';
 
 function makeOptionOrAttribute(bundle, graph, options) {
 
@@ -77,6 +79,15 @@ function findAvailableSlug(index, name) {
   } while (index.has(slug));
 
   return slug;
+}
+
+function objectValues(o) {
+  var values = [];
+
+  for (var k in o)
+    values.push(o[k]);
+
+  return values;
 }
 
 // TODO: add option to sample data for type inference
@@ -169,6 +180,8 @@ module.exports = function buildMinivanBundle(graph, options) {
         modularity: 0
       };
 
+      model.cardinality = 0;
+
       model.modalities = {};
     }
     else {
@@ -203,6 +216,8 @@ module.exports = function buildMinivanBundle(graph, options) {
 
       if (model.type === 'partition') {
         if (!(v in model.modalities)) {
+          model.cardinality++;
+
           model.modalities[v] = {
             value: v,
             nodes: 1
@@ -221,7 +236,29 @@ module.exports = function buildMinivanBundle(graph, options) {
     }
   }
 
-  console.log(nodeAttributes, edgeAttributes);
+  // Finalization
+  var modality, palette, m, p;
+
+  for (k in nodeAttributes) {
+    model = nodeAttributes[k];
+
+    if (model.type === 'partition') {
+      palette = palettes[Math.min(9, model.cardinality - 1)];
+
+      p = 0;
+      for (m in model.modalities) {
+        modality = model.modalities[m];
+        modality.color = palette[p] || DEFAULT_COLOR;
+
+        p++;
+      }
+    }
+  }
+
+  bundle.model = {
+    nodeAttributes: objectValues(nodeAttributes),
+    edgeAttributes: objectValues(edgeAttributes)
+  };
 
   return bundle;
 };

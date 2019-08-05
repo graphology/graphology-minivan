@@ -46,6 +46,7 @@ if (bundle.nodeAttributes) {
         id: attr.id,
         name: attr.name,
         count: attr.count,
+        cardinality: 0,
         type: 'partition',
         modalities: {},
         stats: {
@@ -65,6 +66,8 @@ if (bundle.nodeAttributes) {
             expected: matchingFlow[k].expected,
             normalizedDensity: matchingFlow[k].nd
           };
+
+        attr.cardinality++;
 
         attr.modalities[m.value] = {
           value: m.value,
@@ -98,11 +101,14 @@ if (bundle.edgeAttributes) {
         id: attr.id,
         name: attr.name,
         count: attr.count,
+        cardinality: 0,
         type: 'partition',
         modalities: {}
       };
 
       oldModalities.forEach(function(m) {
+        attr.cardinality++;
+
         attr.modalities[m.value] = {
           value: m.value,
           color: m.color,
