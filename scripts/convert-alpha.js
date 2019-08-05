@@ -6,7 +6,7 @@ var newBundle = {
   title: bundle.title,
   description: bundle.description,
   consolidated: bundle.consolidated || false,
-  bundleVersion: '0.1.0'
+  bundleVersion: '1.0.0'
 };
 
 if (bundle.authors)

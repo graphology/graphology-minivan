@@ -1,6 +1,6 @@
 {
   "name": "graphology-minivan",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Minivan bundles for graphology.",
   "main": "index.js",
   "files": [

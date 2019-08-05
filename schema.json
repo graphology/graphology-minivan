@@ -3,7 +3,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Minivan Graph Bundle",
   "description": "A file describing both a graph's data as well as elementes related to its visual grammar.",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "object",
   "properties": {
     "title": {
