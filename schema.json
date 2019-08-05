@@ -27,6 +27,10 @@
       "type": "string",
       "format": "uri"
     },
+    "doi": {
+      "title": "DOI",
+      "type": "string"
+    },
     "bundleVersion": {
       "title": "Version of the bundle used.",
       "type": "string"
