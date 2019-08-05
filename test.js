@@ -2,6 +2,8 @@
  * Graphology Minivan Unit Tests
  * ==============================
  */
+require('util').inspect.defaultOptions.depth = null;
+
 var assert = require('assert');
 var buildMinivanBundle = require('./index.js');
 var validate = require('./validate.js');

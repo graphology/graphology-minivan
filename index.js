@@ -35,6 +35,14 @@ var TYPE_ORDER = {
   integer: 2
 };
 
+var TYPE_TO_ATTR_TYPE = {
+  string: 'partition',
+  float: 'ranking-size',
+  integer: 'ranking-size'
+};
+
+var DEFAULT_INTERPOLATION = 'linear';
+
 function makeOptionOrAttribute(bundle, graph, options) {
 
   return function(name) {
@@ -57,6 +65,18 @@ function guessType(val) {
   }
 
   return 'unknown';
+}
+
+function findAvailableSlug(index, name) {
+  var slug,
+      i = -1;
+
+  do {
+    slug = slugify(name + (i < 0 ? '' : i.toString()));
+    i++;
+  } while (index.has(slug));
+
+  return slug;
 }
 
 // TODO: add option to sample data for type inference
@@ -86,7 +106,7 @@ module.exports = function buildMinivanBundle(graph, options) {
 
   var i, l, k, v, node, edge, attr, type, order;
 
-  for (var i = 0, l = serialized.nodes.length; i < l; i++) {
+  for (i = 0, l = serialized.nodes.length; i < l; i++) {
     node = serialized.nodes[i];
     attr = node.attributes;
 
@@ -104,7 +124,7 @@ module.exports = function buildMinivanBundle(graph, options) {
     }
   }
 
-  for (var i = 0, l = serialized.edges.length; i < l; i++) {
+  for (i = 0, l = serialized.edges.length; i < l; i++) {
     edge = serialized.edges[i];
     attr = edge.attributes;
 
@@ -122,9 +142,86 @@ module.exports = function buildMinivanBundle(graph, options) {
     }
   }
 
-  // Second pass to aggregate metrics and build model
+  // Building model
+  var nodeAttributes = {},
+      edgeAttributes = {},
+      allocatedSlugs = new Set();
 
-  console.log(nodeInferences, edgeInferences);
+  var attrType, model, slug;
+
+  for (k in nodeInferences) {
+    type = nodeInferences[k];
+
+    // TODO: add user's hints here!
+    attrType = TYPE_TO_ATTR_TYPE[type];
+    slug = findAvailableSlug(allocatedSlugs, k);
+    allocatedSlugs.add(slug);
+
+    model = {
+      id: slug,
+      name: k,
+      count: 0,
+      type: attrType
+    };
+
+    if (attrType === 'partition') {
+      model.stats = {
+        modularity: 0
+      };
+
+      model.modalities = {};
+    }
+    else {
+      model.min = Infinity;
+      model.max = -Infinity;
+      model.integer = type === 'integer';
+    }
+
+    if (attrType === 'ranking-color') {
+
+    }
+    else if (attrType === 'ranking-size') {
+
+    }
+
+    nodeAttributes[k] = model;
+  }
+
+  // Second pass to aggregate values & compute metrics
+  for (i = 0, l = serialized.nodes.length; i < l; i++) {
+    node = serialized.nodes[i];
+    attr = node.attributes;
+
+    for (k in attr) {
+      if (NODE_ATTRIBUTES_TO_IGNORE.has(k))
+        continue;
+
+      v = attr[k];
+      model = nodeAttributes[k];
+
+      model.count++;
+
+      if (model.type === 'partition') {
+        if (!(v in model.modalities)) {
+          model.modalities[v] = {
+            value: v,
+            nodes: 1
+          };
+        }
+        else {
+          model.modalities[v].nodes++;
+        }
+      }
+      else {
+        if (v < model.min)
+          model.min = v;
+        if (v > model.max)
+          model.max = v;
+      }
+    }
+  }
+
+  console.log(nodeAttributes, edgeAttributes);
 
   return bundle;
 };
