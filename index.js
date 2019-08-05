@@ -44,14 +44,20 @@ var TYPE_TO_ATTR_TYPE = {
   integer: 'ranking-size'
 };
 
-var DEFAULT_INTERPOLATION = 'linear';
+var DEFAULT_AREA_SCALING_INTERPOLATION = 'linear';
+var DEFAULT_COLOR_SCALE = 'interpolateGreys';
 var DEFAULT_COLOR_DARK = '#666';
 var DEFAULT_COLOR_BRIGHT = '#AAA';
 var DEFAULT_MIN_NODE_SIZE = 10;
 var DEFAULT_MAX_NODE_SIZE = 100;
+var DEFAULT_INVERT_SCALE = false;
+var DEFAULT_TRUNCATE_SCALE = true;
 
 var MIN_PROPORTION_FOR_COLOR = 0.01;
 
+/**
+ * Helpers.
+ */
 function makeOptionOrAttribute(bundle, graph, options) {
 
   return function(name) {
@@ -97,6 +103,9 @@ function objectValues(o) {
   return values;
 }
 
+/**
+ * Main function.
+ */
 // TODO: add option to sample data for type inference
 module.exports = function buildMinivanBundle(graph, options) {
   if (!isGraph(graph))
@@ -200,13 +209,62 @@ module.exports = function buildMinivanBundle(graph, options) {
     }
 
     if (attrType === 'ranking-color') {
-
+      model.colorScale = DEFAULT_COLOR_SCALE;
+      model.invertScale = DEFAULT_INVERT_SCALE;
+      model.truncateScale = DEFAULT_TRUNCATE_SCALE;
     }
     else if (attrType === 'ranking-size') {
-
+      model.areaScaling = {
+        min: DEFAULT_MIN_NODE_SIZE,
+        max: DEFAULT_MAX_NODE_SIZE,
+        interpolation: DEFAULT_AREA_SCALING_INTERPOLATION
+      };
     }
 
     nodeAttributes[k] = model;
+  }
+
+  allocatedSlugs.clear();
+
+  for (k in edgeInferences) {
+    type = edgeInferences[k];
+
+    // TODO: add user's hints here!
+    attrType = TYPE_TO_ATTR_TYPE[type];
+    slug = findAvailableSlug(allocatedSlugs, k);
+    allocatedSlugs.add(slug);
+
+    model = {
+      id: slug,
+      name: k,
+      count: 0,
+      type: attrType
+    };
+
+    if (attrType === 'partition') {
+      model.cardinality = 0;
+      model.modalities = {};
+    }
+    else {
+      model.min = Infinity;
+      model.max = -Infinity;
+      model.integer = type === 'integer';
+    }
+
+    if (attrType === 'ranking-color') {
+      model.colorScale = DEFAULT_COLOR_SCALE;
+      model.invertScale = DEFAULT_INVERT_SCALE;
+      model.truncateScale = DEFAULT_TRUNCATE_SCALE;
+    }
+    else if (attrType === 'ranking-size') {
+      model.areaScaling = {
+        min: DEFAULT_MIN_NODE_SIZE,
+        max: DEFAULT_MAX_NODE_SIZE,
+        interpolation: DEFAULT_AREA_SCALING_INTERPOLATION
+      };
+    }
+
+    edgeAttributes[k] = model;
   }
 
   // Second pass to aggregate values & compute metrics
@@ -220,6 +278,41 @@ module.exports = function buildMinivanBundle(graph, options) {
 
       v = attr[k];
       model = nodeAttributes[k];
+
+      model.count++;
+
+      if (model.type === 'partition') {
+        if (!(v in model.modalities)) {
+          model.cardinality++;
+
+          model.modalities[v] = {
+            value: v,
+            nodes: 1
+          };
+        }
+        else {
+          model.modalities[v].nodes++;
+        }
+      }
+      else {
+        if (v < model.min)
+          model.min = v;
+        if (v > model.max)
+          model.max = v;
+      }
+    }
+  }
+
+  for (i = 0, l = serialized.edges.length; i < l; i++) {
+    edge = serialized.edges[i];
+    attr = edge.attributes;
+
+    for (k in attr) {
+      if (EDGE_ATTRIBUTES_TO_IGNORE.has(k))
+        continue;
+
+      v = attr[k];
+      model = edgeAttributes[k];
 
       model.count++;
 
