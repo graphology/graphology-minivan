@@ -4,6 +4,8 @@
  *
  * Library endpoint.
  */
+var isGraph = require('graphology-utils/is-graph');
+
 var slugify = require('./slugify.js'),
     palettes = require('./palettes.js');
 
@@ -43,7 +45,12 @@ var TYPE_TO_ATTR_TYPE = {
 };
 
 var DEFAULT_INTERPOLATION = 'linear';
-var DEFAULT_COLOR = '#666';
+var DEFAULT_COLOR_DARK = '#666';
+var DEFAULT_COLOR_BRIGHT = '#AAA';
+var DEFAULT_MIN_NODE_SIZE = 10;
+var DEFAULT_MAX_NODE_SIZE = 100;
+
+var MIN_PROPORTION_FOR_COLOR = 0.01;
 
 function makeOptionOrAttribute(bundle, graph, options) {
 
@@ -92,6 +99,8 @@ function objectValues(o) {
 
 // TODO: add option to sample data for type inference
 module.exports = function buildMinivanBundle(graph, options) {
+  if (!isGraph(graph))
+    throw new Error('graphology-minivan: the given graph is not a valid graphology instance.');
 
   var bundle = {
     bundleVersion: '1.0.0',
@@ -248,9 +257,16 @@ module.exports = function buildMinivanBundle(graph, options) {
       p = 0;
       for (m in model.modalities) {
         modality = model.modalities[m];
-        modality.color = palette[p] || DEFAULT_COLOR;
 
-        p++;
+        // We give a color only if needed
+        // TODO: this code is a bit different from the orignal minivan one!
+        if (model.cardinality / graph.order >= MIN_PROPORTION_FOR_COLOR) {
+          modality.color = palette[p];
+          p++;
+        }
+        else {
+          modality.color = DEFAULT_COLOR_DARK;
+        }
       }
     }
   }

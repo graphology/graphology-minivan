@@ -63,6 +63,12 @@ var GRAPHS = {
 describe('graphology-minivan', function() {
   describe('serialization', function() {
 
+    it('should throw if given an invalid graph.', function() {
+      assert.throws(function() {
+        buildMinivanBundle({hello: 'world'});
+      });
+    });
+
     it('should produce a correct bundle.', function() {
       var graph = UndirectedGraph.from(GRAPHS.basic);
 

@@ -42,5 +42,8 @@
     "globals": {
       "Set": true
     }
+  },
+  "dependencies": {
+    "graphology-utils": "^1.5.0"
   }
 }
