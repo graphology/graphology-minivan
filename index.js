@@ -152,7 +152,6 @@ function userSpecOrDefault(userSpec, name, defaultValue) {
  *
  * @param  {Graph}  graph    - Target graph.
  * @param  {object} options  - Options:
- * @param  {object}   meta     - Graph's metadata.
  * @param  {object}   model    - Graph's model.
  * @return {object}
  */
