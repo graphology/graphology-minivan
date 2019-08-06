@@ -3,6 +3,12 @@
  * ===================
  *
  * Library endpoint.
+ *
+ * [References]:
+ * Newman, M. E. J. (2006). Modularity and community structure in networks.
+ * Proceedings of the National Academy of Sciences of the USA,
+ * 103(23), 8577–8582.
+ * http://doi.org/10.1073/pnas.0601602103
  */
 var isGraph = require('graphology-utils/is-graph');
 
@@ -174,6 +180,7 @@ module.exports = function buildMinivanBundle(graph, options) {
   // Building model
   var nodeAttributes = {},
       edgeAttributes = {},
+      nodePartitionAttributes = {},
       allocatedSlugs = new Set();
 
   var attrType, model, slug;
@@ -201,6 +208,8 @@ module.exports = function buildMinivanBundle(graph, options) {
       model.cardinality = 0;
 
       model.modalities = {};
+
+      nodePartitionAttributes[k] = model;
     }
     else {
       model.min = Infinity;
@@ -287,7 +296,16 @@ module.exports = function buildMinivanBundle(graph, options) {
 
           model.modalities[v] = {
             value: v,
-            nodes: 1
+            nodes: 1,
+            internalEdges: 0,
+            inboundEdges: 0,
+            outboundEdges: 0,
+            externalEdges: 0,
+            internalNormalizedDensity: 0,
+            inboundNormalizedDensity: 0,
+            outboundNormalizedDensity: 0,
+            externalNormalizedDensity: 0,
+            flow: {}
           };
         }
         else {
@@ -303,10 +321,37 @@ module.exports = function buildMinivanBundle(graph, options) {
     }
   }
 
+  var vf;
+
+  for (k in nodePartitionAttributes) {
+    model = nodePartitionAttributes[k];
+
+    for (v in model.modalities) {
+      for (vf in model.modalities) {
+        model.modalities[v].flow[vf] = {
+          count: 0,
+          expected: 0,
+          normalizedDensity: 0
+        };
+      }
+    }
+  }
+
+  var sourceModality, targetModality;
+
   for (i = 0, l = serialized.edges.length; i < l; i++) {
     edge = serialized.edges[i];
     attr = edge.attributes;
 
+    // Modalities flow
+    for (k in nodePartitionAttributes) {
+      sourceModality = graph.getNodeAttribute(edge.source, k);
+      targetModality = graph.getNodeAttribute(edge.target, k);
+
+      console.log(k, sourceModality, targetModality);
+    }
+
+    // Edge values
     for (k in attr) {
       if (EDGE_ATTRIBUTES_TO_IGNORE.has(k))
         continue;
