@@ -130,6 +130,7 @@ function objectValues(o) {
  * @return {object}
  */
 // TODO: add option to sample data for type inference
+// TODO: handle ignore type
 module.exports = function buildMinivanBundle(graph, options) {
   if (!isGraph(graph))
     throw new Error('graphology-minivan: the given graph is not a valid graphology instance.');
@@ -228,54 +229,55 @@ module.exports = function buildMinivanBundle(graph, options) {
       nodePartitionAttributes = {},
       allocatedSlugs = new Set();
 
-  var attrType, model, slug;
+  var attrType, spec, slug, userSpec;
 
   for (k in nodeInferences) {
     type = nodeInferences[k];
 
-    // TODO: add user's hints here!
-    attrType = TYPE_TO_ATTR_TYPE[type];
+    attrType = userSpec ? userSpec.type : TYPE_TO_ATTR_TYPE[type];
     slug = findAvailableSlug(allocatedSlugs, k);
     allocatedSlugs.add(slug);
 
-    model = {
-      id: slug,
-      name: k,
+    userSpec = userNodeAttributes && userNodeAttributes[k];
+
+    spec = {
+      id: userSpec ? userSpec.id : slug,
+      name: userSpec ? userSpec.name : k,
       count: 0,
       type: attrType
     };
 
     if (attrType === 'partition') {
-      model.stats = {
+      spec.stats = {
         modularity: 0
       };
 
-      model.cardinality = 0;
+      spec.cardinality = 0;
 
-      model.modalities = {};
+      spec.modalities = {};
 
-      nodePartitionAttributes[k] = model;
+      nodePartitionAttributes[k] = spec;
     }
     else {
-      model.min = Infinity;
-      model.max = -Infinity;
-      model.integer = type === 'integer';
+      spec.min = Infinity;
+      spec.max = -Infinity;
+      spec.integer = type === 'integer';
     }
 
     if (attrType === 'ranking-color') {
-      model.colorScale = DEFAULT_COLOR_SCALE;
-      model.invertScale = DEFAULT_INVERT_SCALE;
-      model.truncateScale = DEFAULT_TRUNCATE_SCALE;
+      spec.colorScale = DEFAULT_COLOR_SCALE;
+      spec.invertScale = DEFAULT_INVERT_SCALE;
+      spec.truncateScale = DEFAULT_TRUNCATE_SCALE;
     }
     else if (attrType === 'ranking-size') {
-      model.areaScaling = {
+      spec.areaScaling = {
         min: DEFAULT_MIN_NODE_SIZE,
         max: DEFAULT_MAX_NODE_SIZE,
         interpolation: DEFAULT_AREA_SCALING_INTERPOLATION
       };
     }
 
-    nodeAttributes[k] = model;
+    nodeAttributes[k] = spec;
   }
 
   allocatedSlugs.clear();
@@ -283,42 +285,41 @@ module.exports = function buildMinivanBundle(graph, options) {
   for (k in edgeInferences) {
     type = edgeInferences[k];
 
-    // TODO: add user's hints here!
-    attrType = TYPE_TO_ATTR_TYPE[type];
+    attrType = userSpec ? userSpec.type : TYPE_TO_ATTR_TYPE[type];
     slug = findAvailableSlug(allocatedSlugs, k);
     allocatedSlugs.add(slug);
 
-    model = {
-      id: slug,
-      name: k,
+    spec = {
+      id: userSpec ? userSpec.id : slug,
+      name: userSpec ? userSpec.name : k,
       count: 0,
       type: attrType
     };
 
     if (attrType === 'partition') {
-      model.cardinality = 0;
-      model.modalities = {};
+      spec.cardinality = 0;
+      spec.modalities = {};
     }
     else {
-      model.min = Infinity;
-      model.max = -Infinity;
-      model.integer = type === 'integer';
+      spec.min = Infinity;
+      spec.max = -Infinity;
+      spec.integer = type === 'integer';
     }
 
     if (attrType === 'ranking-color') {
-      model.colorScale = DEFAULT_COLOR_SCALE;
-      model.invertScale = DEFAULT_INVERT_SCALE;
-      model.truncateScale = DEFAULT_TRUNCATE_SCALE;
+      spec.colorScale = DEFAULT_COLOR_SCALE;
+      spec.invertScale = DEFAULT_INVERT_SCALE;
+      spec.truncateScale = DEFAULT_TRUNCATE_SCALE;
     }
     else if (attrType === 'ranking-size') {
-      model.areaScaling = {
+      spec.areaScaling = {
         min: DEFAULT_MIN_NODE_SIZE,
         max: DEFAULT_MAX_NODE_SIZE,
         interpolation: DEFAULT_AREA_SCALING_INTERPOLATION
       };
     }
 
-    edgeAttributes[k] = model;
+    edgeAttributes[k] = spec;
   }
 
   // Second pass to aggregate values & compute metrics
@@ -328,15 +329,15 @@ module.exports = function buildMinivanBundle(graph, options) {
 
     for (k in nodeAttributes) {
       v = attr[k];
-      model = nodeAttributes[k];
+      spec = nodeAttributes[k];
 
-      model.count++;
+      spec.count++;
 
-      if (model.type === 'partition') {
-        if (!(v in model.modalities)) {
-          model.cardinality++;
+      if (spec.type === 'partition') {
+        if (!(v in spec.modalities)) {
+          spec.cardinality++;
 
-          model.modalities[v] = {
+          spec.modalities[v] = {
             value: v,
             nodes: 1,
             internalEdges: 0,
@@ -351,14 +352,14 @@ module.exports = function buildMinivanBundle(graph, options) {
           };
         }
         else {
-          model.modalities[v].nodes++;
+          spec.modalities[v].nodes++;
         }
       }
       else {
-        if (v < model.min)
-          model.min = v;
-        if (v > model.max)
-          model.max = v;
+        if (v < spec.min)
+          spec.min = v;
+        if (v > spec.max)
+          spec.max = v;
       }
     }
   }
@@ -366,11 +367,11 @@ module.exports = function buildMinivanBundle(graph, options) {
   var vf;
 
   for (k in nodePartitionAttributes) {
-    model = nodePartitionAttributes[k];
+    spec = nodePartitionAttributes[k];
 
-    for (v in model.modalities) {
-      for (vf in model.modalities) {
-        model.modalities[v].flow[vf] = {
+    for (v in spec.modalities) {
+      for (vf in spec.modalities) {
+        spec.modalities[v].flow[vf] = {
           count: 0,
           expected: 0,
           normalizedDensity: 0
@@ -401,28 +402,28 @@ module.exports = function buildMinivanBundle(graph, options) {
     // Edge values
     for (k in edgeAttributes) {
       v = attr[k];
-      model = edgeAttributes[k];
+      spec = edgeAttributes[k];
 
-      model.count++;
+      spec.count++;
 
-      if (model.type === 'partition') {
-        if (!(v in model.modalities)) {
-          model.cardinality++;
+      if (spec.type === 'partition') {
+        if (!(v in spec.modalities)) {
+          spec.cardinality++;
 
-          model.modalities[v] = {
+          spec.modalities[v] = {
             value: v,
             edges: 1
           };
         }
         else {
-          model.modalities[v].nodes++;
+          spec.modalities[v].nodes++;
         }
       }
       else {
-        if (v < model.min)
-          model.min = v;
-        if (v > model.max)
-          model.max = v;
+        if (v < spec.min)
+          spec.min = v;
+        if (v > spec.max)
+          spec.max = v;
       }
     }
   }
@@ -432,18 +433,18 @@ module.exports = function buildMinivanBundle(graph, options) {
 
   // TODO: do this with edges
   for (k in nodeAttributes) {
-    model = nodeAttributes[k];
+    spec = nodeAttributes[k];
 
-    if (model.type === 'partition') {
-      palette = palettes[Math.min(9, model.cardinality - 1)];
+    if (spec.type === 'partition') {
+      palette = palettes[Math.min(9, spec.cardinality - 1)];
 
       p = 0;
-      for (m in model.modalities) {
-        modality = model.modalities[m];
+      for (m in spec.modalities) {
+        modality = spec.modalities[m];
 
         // We give a color only if needed
         // TODO: this code is a bit different from the orignal minivan one!
-        if (model.cardinality / graph.order >= MIN_PROPORTION_FOR_COLOR) {
+        if (spec.cardinality / graph.order >= MIN_PROPORTION_FOR_COLOR) {
           modality.color = palette[p];
           p++;
         }

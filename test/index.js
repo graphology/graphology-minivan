@@ -97,7 +97,7 @@ describe('graphology-minivan', function() {
 
       var bundle = buildMinivanBundle(graph, {model: NORDIC_DESIGN.model});
 
-      console.log(bundle.model)
+      console.log(bundle.model);
     });
   });
 });
