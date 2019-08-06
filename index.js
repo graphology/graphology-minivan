@@ -234,11 +234,11 @@ module.exports = function buildMinivanBundle(graph, options) {
   for (k in nodeInferences) {
     type = nodeInferences[k];
 
+    userSpec = userNodeAttributes && userNodeAttributes[k];
+
     attrType = userSpec ? userSpec.type : TYPE_TO_ATTR_TYPE[type];
     slug = findAvailableSlug(allocatedSlugs, k);
     allocatedSlugs.add(slug);
-
-    userSpec = userNodeAttributes && userNodeAttributes[k];
 
     spec = {
       id: userSpec ? userSpec.id : slug,
@@ -284,6 +284,8 @@ module.exports = function buildMinivanBundle(graph, options) {
 
   for (k in edgeInferences) {
     type = edgeInferences[k];
+
+    userSpec = userEdgeAttributes && userEdgeAttributes[k];
 
     attrType = userSpec ? userSpec.type : TYPE_TO_ATTR_TYPE[type];
     slug = findAvailableSlug(allocatedSlugs, k);
@@ -394,7 +396,10 @@ module.exports = function buildMinivanBundle(graph, options) {
 
       o = nodePartitionAttributes[k]
         .modalities[sourceModality]
-        .flow[targetModality];
+
+      o.internalEdges += 1;
+
+      o = o.flow[targetModality];
 
       o.count++;
     }
