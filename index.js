@@ -368,7 +368,7 @@ module.exports = function buildMinivanBundle(graph, options) {
 
           spec.modalities[v] = {
             value: v,
-            nodes: 1,
+            count: 1,
             internalEdges: 0,
             inboundEdges: 0,
             outboundEdges: 0,
@@ -381,7 +381,7 @@ module.exports = function buildMinivanBundle(graph, options) {
           };
         }
         else {
-          spec.modalities[v].nodes++;
+          spec.modalities[v].count++;
         }
       }
       else {

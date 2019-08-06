@@ -321,7 +321,7 @@
                           "title": "The modality's partition color.",
                           "type": "string"
                         },
-                        "nodes": {
+                        "count": {
                           "title": "Number of nodes having this modality for this attribute.",
                           "type": "integer"
                         },

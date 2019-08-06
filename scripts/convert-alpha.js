@@ -75,7 +75,7 @@ if (bundle.nodeAttributes) {
         attr.modalities[m.value] = {
           value: m.value,
           color: m.color,
-          nodes: m.count,
+          count: m.count,
           internalEdges: matchingData.internalLinks,
           inboundEdges: matchingData.inboundLinks,
           outboundEdges: matchingData.outboundLinks,
