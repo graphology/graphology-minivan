@@ -68,8 +68,8 @@ var MIN_PROPORTION_FOR_COLOR = 0.01;
 function makeOptionOrAttribute(bundle, graph, options) {
 
   return function(name) {
-    if (options.meta && options.meta[name])
-      bundle[name] = options.meta[name];
+    if (options && options[name])
+      bundle[name] = options[name];
     else if (graph.hasAttribute(name))
       bundle[name] = graph.getAttribute(name);
   };
@@ -463,7 +463,6 @@ module.exports = function buildMinivanBundle(graph, options) {
   // Finalization
   var modality, palette, nd, m, p;
 
-  // TODO: do this with edges
   for (k in nodeAttributes) {
     spec = nodeAttributes[k];
 
@@ -497,6 +496,11 @@ module.exports = function buildMinivanBundle(graph, options) {
 
             targetModality.inboundNormalizedDensity += nd;
             targetModality.externalNormalizedDensity += nd;
+
+            spec.stats.modularity -= nd;
+          }
+          else {
+            spec.stats.modularity += nd;
           }
         }
 
@@ -511,6 +515,29 @@ module.exports = function buildMinivanBundle(graph, options) {
         }
         else {
           modality.color = DEFAULT_COLOR_DARK;
+        }
+      }
+    }
+  }
+
+  for (k in edgeAttributes) {
+    spec = edgeAttributes[k];
+
+    if (spec.type === 'partition') {
+      palette = palettes[Math.min(9, spec.cardinality - 1)];
+
+      p = 0;
+      for (m in spec.modalities) {
+        modality = spec.modalities[m];
+
+        // We give a color only if needed
+        // TODO: this code is a bit different from the orignal minivan one!
+        if (spec.cardinality / graph.order >= MIN_PROPORTION_FOR_COLOR) {
+          modality.color = palette[p];
+          p++;
+        }
+        else {
+          modality.color = DEFAULT_COLOR_BRIGHT;
         }
       }
     }

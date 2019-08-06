@@ -4,7 +4,11 @@
  */
 require('util').inspect.defaultOptions.depth = null;
 
-var assert = require('assert');
+var chai = require('chai');
+chai.use(require('chai-roughly'));
+var assert = chai.assert;
+var expect = chai.expect;
+
 var path = require('path');
 var fs = require('fs-extra');
 var buildMinivanBundle = require('../index.js');
@@ -80,7 +84,7 @@ describe('graphology-minivan', function() {
     it('should produce a correct bundle.', function() {
       var graph = UndirectedGraph.from(GRAPHS.basic);
 
-      var bundle = buildMinivanBundle(graph, {meta: {url: 'http://supergraph.sv'}});
+      var bundle = buildMinivanBundle(graph, {url: 'http://supergraph.sv'});
 
       var errors = validate(bundle);
 
@@ -93,11 +97,11 @@ describe('graphology-minivan', function() {
       var graph = new Graph(NORDIC_DESIGN.settings);
       graph.import(NORDIC_DESIGN.graph);
 
-      // console.log(NORDIC_DESIGN.model.nodeAttributes.find(a => a.id === 'country'));
+      var bundle = buildMinivanBundle(graph, NORDIC_DESIGN);
 
-      var bundle = buildMinivanBundle(graph, {model: NORDIC_DESIGN.model});
+      // console.log(bundle.model.nodeAttributes.find(m => m.id === 'branch').stats)
 
-      console.log(bundle.model.nodeAttributes.find(m => m.id === 'country'));
+      // expect(bundle).to.roughly.deep.equal(NORDIC_DESIGN);
     });
   });
 });
