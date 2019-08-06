@@ -5,6 +5,7 @@
   "description": "A file describing both a graph's data as well as elementes related to its visual grammar.",
   "version": "1.0.0",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "title": {
       "title": "Title.",
@@ -59,6 +60,7 @@
       }
     },
     "graph": {
+      "additionalProperties": false,
       "title": "Graph data.",
       "type": "object",
       "properties": {
@@ -119,6 +121,7 @@
       }
     },
     "model": {
+      "additionalProperties": false,
       "title": "Model of the graph.",
       "type": "object",
       "properties": {

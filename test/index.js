@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 /**
  * Graphology Minivan Unit Tests
  * ==============================
@@ -87,6 +88,9 @@ describe('graphology-minivan', function() {
       var bundle = buildMinivanBundle(graph, {url: 'http://supergraph.sv'});
 
       var errors = validate(bundle);
+
+      if (errors)
+        console.error('Validation error:', errors);
 
       // console.log(bundle);
 
