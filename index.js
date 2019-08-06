@@ -133,6 +133,16 @@ function cast(attrType, val) {
   return val;
 }
 
+function userSpecOrDefault(userSpec, name, defaultValue) {
+  if (!userSpec)
+    return defaultValue;
+
+  if (name in userSpec)
+    return userSpec[name];
+
+  return defaultValue;
+}
+
 /**
  * Function taking a graphology Graph instance && some options and returning
  * a viable MiniVan bundle ready to stringify.
@@ -278,20 +288,20 @@ module.exports = function buildMinivanBundle(graph, options) {
     else {
       spec.min = Infinity;
       spec.max = -Infinity;
-      spec.integer = type === 'integer';
+      spec.integer = userSpecOrDefault(userSpec, 'integer', type === 'integer');
     }
 
     if (attrType === 'ranking-color') {
-      spec.colorScale = DEFAULT_COLOR_SCALE;
-      spec.invertScale = DEFAULT_INVERT_SCALE;
-      spec.truncateScale = DEFAULT_TRUNCATE_SCALE;
+      spec.colorScale = userSpecOrDefault(userSpec, 'colorScale', DEFAULT_COLOR_SCALE);
+      spec.invertScale = userSpecOrDefault(userSpec, 'invertScale', DEFAULT_INVERT_SCALE);
+      spec.truncateScale = userSpecOrDefault(userSpec, 'truncateScale', DEFAULT_TRUNCATE_SCALE);
     }
     else if (attrType === 'ranking-size') {
-      spec.areaScaling = {
+      spec.areaScaling = userSpecOrDefault(userSpec, 'areaScaling', {
         min: DEFAULT_MIN_NODE_SIZE,
         max: DEFAULT_MAX_NODE_SIZE,
         interpolation: DEFAULT_AREA_SCALING_INTERPOLATION
-      };
+      });
     }
 
     nodeAttributes[k] = spec;
@@ -322,20 +332,20 @@ module.exports = function buildMinivanBundle(graph, options) {
     else {
       spec.min = Infinity;
       spec.max = -Infinity;
-      spec.integer = type === 'integer';
+      spec.integer = userSpecOrDefault(userSpec, 'integer', type === 'integer');
     }
 
     if (attrType === 'ranking-color') {
-      spec.colorScale = DEFAULT_COLOR_SCALE;
-      spec.invertScale = DEFAULT_INVERT_SCALE;
-      spec.truncateScale = DEFAULT_TRUNCATE_SCALE;
+      spec.colorScale = userSpecOrDefault(userSpec, 'colorScale', DEFAULT_COLOR_SCALE);
+      spec.invertScale = userSpecOrDefault(userSpec, 'invertScale', DEFAULT_INVERT_SCALE);
+      spec.truncateScale = userSpecOrDefault(userSpec, 'truncateScale', DEFAULT_TRUNCATE_SCALE);
     }
     else if (attrType === 'ranking-size') {
-      spec.areaScaling = {
+      spec.areaScaling = userSpecOrDefault(userSpec, 'areaScaling', {
         min: DEFAULT_MIN_NODE_SIZE,
         max: DEFAULT_MAX_NODE_SIZE,
         interpolation: DEFAULT_AREA_SCALING_INTERPOLATION
-      };
+      });
     }
 
     edgeAttributes[k] = spec;
@@ -465,6 +475,7 @@ module.exports = function buildMinivanBundle(graph, options) {
 
   for (k in nodeAttributes) {
     spec = nodeAttributes[k];
+    userSpec = userNodeAttributes && userNodeAttributes[k];
 
     if (spec.type === 'partition') {
       palette = palettes[Math.min(9, spec.cardinality - 1)];
@@ -507,6 +518,16 @@ module.exports = function buildMinivanBundle(graph, options) {
         // Updating normalized densities
         modality.internalNormalizedDensity = modality.flow[m].normalizedDensity;
 
+        if (
+          userSpec &&
+          userSpec.modalities &&
+          m in userSpec.modalities &&
+          'color' in userSpec.modalities[m]
+        ) {
+          modality.color = userSpec.modalities[m].color;
+          continue;
+        }
+
         // We give a color only if needed
         // TODO: this code is a bit different from the orignal minivan one!
         if (spec.cardinality / graph.order >= MIN_PROPORTION_FOR_COLOR) {
@@ -522,6 +543,7 @@ module.exports = function buildMinivanBundle(graph, options) {
 
   for (k in edgeAttributes) {
     spec = edgeAttributes[k];
+    userSpec = userEdgeAttributes && userEdgeAttributes[k];
 
     if (spec.type === 'partition') {
       palette = palettes[Math.min(9, spec.cardinality - 1)];
@@ -529,6 +551,16 @@ module.exports = function buildMinivanBundle(graph, options) {
       p = 0;
       for (m in spec.modalities) {
         modality = spec.modalities[m];
+
+        if (
+          userSpec &&
+          userSpec.modalities &&
+          m in userSpec.modalities &&
+          'color' in userSpec.modalities[m]
+        ) {
+          modality.color = userSpec.modalities[m].color;
+          continue;
+        }
 
         // We give a color only if needed
         // TODO: this code is a bit different from the orignal minivan one!
@@ -547,6 +579,15 @@ module.exports = function buildMinivanBundle(graph, options) {
     nodeAttributes: objectValues(nodeAttributes),
     edgeAttributes: objectValues(edgeAttributes)
   };
+
+  if (userModel && userModel.defaultNodeSize)
+    bundle.model.defaultNodeSize = userModel.defaultNodeSize;
+  if (userModel && userModel.defaultEdgeSize)
+    bundle.model.defaultEdgeSize = userModel.defaultEdgeSize;
+  if (userModel && userModel.defaultNodeColor)
+    bundle.model.defaultNodeColor = userModel.defaultNodeColor;
+  if (userModel && userModel.defaultEdgeColor)
+    bundle.model.defaultEdgeColor = userModel.defaultEdgeColor;
 
   return bundle;
 };

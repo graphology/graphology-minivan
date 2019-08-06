@@ -101,7 +101,7 @@ describe('graphology-minivan', function() {
 
       // console.log(bundle.model.nodeAttributes.find(m => m.id === 'branch').stats)
 
-      // expect(bundle).to.roughly.deep.equal(NORDIC_DESIGN);
+      expect(bundle).to.roughly.deep.equal(NORDIC_DESIGN);
     });
   });
 });

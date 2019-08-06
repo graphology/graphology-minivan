@@ -1,6 +1,7 @@
 /* eslint no-console: 0 */
 // Script converting MiniVan alpha bundle to the current format
 var validate = require('../validate.js');
+var {extent} = require('simple-statistics');
 
 require('util').inspect.defaultOptions.depth = null;
 
@@ -86,6 +87,29 @@ if (bundle.nodeAttributes) {
       });
     }
 
+    // Dropping redundancy
+    else if (attr.type === 'ranking-color') {
+      delete attr.areaScaling;
+    }
+    else if (attr.type === 'ranking-size') {
+      delete attr.colorScale;
+      delete attr.invertScale;
+      delete attr.truncateScale;
+    }
+
+    // Fixing missing data
+    if (
+      (attr.type === 'ranking-color' || attr.type === 'ranking-size') &&
+      (!('min' in attr) || !('max' in attr))
+    ) {
+      var minmax = extent(bundle.g.nodes.map(function(node) {
+        return node.attributes[attr.id];
+      }));
+
+      attr.min = minmax[0];
+      attr.max = minmax[1];
+    }
+
     delete attr.data;
 
     return attr;
@@ -115,6 +139,29 @@ if (bundle.edgeAttributes) {
           edges: m.count
         };
       });
+    }
+
+    // Dropping redundancy
+    else if (attr.type === 'ranking-color') {
+      delete attr.areaScaling;
+    }
+    else if (attr.type === 'ranking-size') {
+      delete attr.colorScale;
+      delete attr.invertScale;
+      delete attr.truncateScale;
+    }
+
+    // Fixing missing data
+    if (
+      (attr.type === 'ranking-color' || attr.type === 'ranking-size') &&
+      (!('min' in attr) || !('max' in attr))
+    ) {
+      var minmax = extent(bundle.g.edges.map(function(edge) {
+        return edge.attributes[attr.id];
+      }));
+
+      attr.min = minmax[0];
+      attr.max = minmax[1];
     }
 
     delete attr.data;
