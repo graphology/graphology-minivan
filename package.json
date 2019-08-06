@@ -4,7 +4,11 @@
   "description": "Minivan bundles for graphology.",
   "main": "index.js",
   "files": [
-    "index.js"
+    "index.js",
+    "palettes.js",
+    "slugify.js",
+    "validate.js",
+    "schema.json"
   ],
   "scripts": {
     "lint": "eslint **/*.js",
@@ -33,6 +37,7 @@
   "homepage": "https://github.com/graphology/graphology-minivan#readme",
   "devDependencies": {
     "@yomguithereal/eslint-config": "^4.0.0",
+    "ajv": "^6.10.2",
     "chai": "^4.2.0",
     "chai-roughly": "^1.0.0",
     "eslint": "^5.16.0",
@@ -49,5 +54,8 @@
   },
   "dependencies": {
     "graphology-utils": "^1.5.0"
+  },
+  "peerDependencies": {
+    "ajv": "^6.10.2"
   }
 }

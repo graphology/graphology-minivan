@@ -1,7 +1,9 @@
 /* eslint no-console: 0 */
 // Script converting MiniVan alpha bundle to the current format
 var validate = require('../validate.js');
-var {extent} = require('simple-statistics');
+var stats = require('simple-statistics');
+
+var extent = stats.extent;
 
 require('util').inspect.defaultOptions.depth = null;
 
