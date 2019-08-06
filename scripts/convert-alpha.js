@@ -74,7 +74,7 @@ if (bundle.nodeAttributes) {
           color: m.color,
           nodes: m.count,
           internalEdges: matchingData.internalLinks,
-          inboundEdges: matchingData.internalLinks,
+          inboundEdges: matchingData.inboundLinks,
           outboundEdges: matchingData.outboundLinks,
           externalEdges: matchingData.externalLinks,
           internalNormalizedDensity: matchingData.internalNDensity,

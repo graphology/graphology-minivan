@@ -86,6 +86,13 @@ function guessType(val) {
     return 'float';
   }
 
+  // NOTE: for now we consider non-scalar & booleans as strings
+  if (typeof val === 'number' || typeof val === 'boolean')
+    return 'string';
+
+  if (!val)
+    return 'null-value';
+
   return 'unknown';
 }
 
@@ -119,9 +126,19 @@ function objectValues(o) {
   return values;
 }
 
+function cast(attrType, val) {
+  if (attrType === 'partition')
+    return val.toString();
+
+  return val;
+}
+
 /**
- * Function taking a graphology Graph instance & some options and returning
+ * Function taking a graphology Graph instance && some options and returning
  * a viable MiniVan bundle ready to stringify.
+ *
+ * @note Something is not very right concerning non-scalar values! We will
+ *       need to make some decisions at some point.
  *
  * @param  {Graph}  graph    - Target graph.
  * @param  {object} options  - Options:
@@ -330,8 +347,9 @@ module.exports = function buildMinivanBundle(graph, options) {
     attr = node.attributes;
 
     for (k in nodeAttributes) {
-      v = attr[k];
       spec = nodeAttributes[k];
+
+      v = cast(spec.type, attr[k]);
 
       spec.count++;
 
@@ -391,13 +409,22 @@ module.exports = function buildMinivanBundle(graph, options) {
     // Modalities flow
     // NOTE: it seems that minivan version only computes directed statistics!
     for (k in nodePartitionAttributes) {
-      sourceModality = graph.getNodeAttribute(edge.source, k);
-      targetModality = graph.getNodeAttribute(edge.target, k);
+      spec = nodePartitionAttributes[k];
 
-      o = nodePartitionAttributes[k]
-        .modalities[sourceModality]
+      sourceModality = cast(spec.type, graph.getNodeAttribute(edge.source, k));
+      targetModality = cast(spec.type, graph.getNodeAttribute(edge.target, k));
 
-      o.internalEdges += 1;
+      o = spec.modalities[sourceModality]
+
+      if (sourceModality === targetModality) {
+        o.internalEdges += 1;
+      }
+      else {
+        o.outboundEdges += 1;
+        o.externalEdges += 1;
+        spec.modalities[targetModality].inboundEdges += 1;
+        spec.modalities[targetModality].externalEdges += 1;
+      }
 
       o = o.flow[targetModality];
 
@@ -406,8 +433,8 @@ module.exports = function buildMinivanBundle(graph, options) {
 
     // Edge values
     for (k in edgeAttributes) {
-      v = attr[k];
       spec = edgeAttributes[k];
+      v = cast(spec.type, attr[k]);
 
       spec.count++;
 
@@ -446,6 +473,22 @@ module.exports = function buildMinivanBundle(graph, options) {
       p = 0;
       for (m in spec.modalities) {
         modality = spec.modalities[m];
+
+        // Updating flow
+        for (vf in modality.flow) {
+          targetModality = spec.modalities[vf];
+
+          modality.flow[vf].expected = (
+            (modality.internalEdges + modality.outboundEdges) *
+            (targetModality.internalEdges + targetModality.inboundEdges) /
+            (2 * graph.size)
+          );
+
+          modality.flow[vf].normalizedDensity = (
+            (modality.flow[vf].count - modality.flow[vf].expected) /
+            (4 * graph.size)
+          );
+        }
 
         // We give a color only if needed
         // TODO: this code is a bit different from the orignal minivan one!
