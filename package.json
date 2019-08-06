@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "eslint **/*.js",
     "prepublish": "npm run lint && npm test",
-    "test": "mocha test.js"
+    "test": "mocha test"
   },
   "repository": {
     "type": "git",

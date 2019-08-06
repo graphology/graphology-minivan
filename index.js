@@ -341,6 +341,7 @@ module.exports = function buildMinivanBundle(graph, options) {
   // Finalization
   var modality, palette, m, p;
 
+  // TODO: do this with edges
   for (k in nodeAttributes) {
     model = nodeAttributes[k];
 

@@ -5,8 +5,8 @@
 require('util').inspect.defaultOptions.depth = null;
 
 var assert = require('assert');
-var buildMinivanBundle = require('./index.js');
-var validate = require('./validate.js');
+var buildMinivanBundle = require('../index.js');
+var validate = require('../validate.js');
 var Graph = require('graphology');
 
 var UndirectedGraph = Graph.UndirectedGraph;
