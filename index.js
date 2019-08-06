@@ -101,6 +101,15 @@ function findAvailableSlug(index, name) {
   return slug;
 }
 
+function indexBy(a) {
+  var index = {};
+
+  for (var i = 0, l = a.length; i < l; i++)
+    index[a[i].id] = a[i];
+
+  return index;
+}
+
 function objectValues(o) {
   var values = [];
 
@@ -111,7 +120,14 @@ function objectValues(o) {
 }
 
 /**
- * Main function.
+ * Function taking a graphology Graph instance & some options and returning
+ * a viable MiniVan bundle ready to stringify.
+ *
+ * @param  {Graph}  graph    - Target graph.
+ * @param  {object} options  - Options:
+ * @param  {object}   meta     - Graph's metadata.
+ * @param  {object}   model    - Graph's model.
+ * @return {object}
  */
 // TODO: add option to sample data for type inference
 module.exports = function buildMinivanBundle(graph, options) {
@@ -120,7 +136,21 @@ module.exports = function buildMinivanBundle(graph, options) {
 
   options = options || {};
 
+  // Extracting information from user's model
   var userModel = options.model || {};
+  var userNodeAttributes = userModel.nodeAttributes ?
+    indexBy(userModel.nodeAttributes) :
+    null;
+  var userEdgeAttributes = userModel.edgeAttributes ?
+    indexBy(userModel.edgeAttributes) :
+    null;
+
+  var nodeAttributesWhiteList = userNodeAttributes ?
+    new Set(Object.keys(userNodeAttributes)) :
+    null;
+  var edgeAttributesWhiteList = userEdgeAttributes ?
+    new Set(Object.keys(userEdgeAttributes)) :
+    null;
 
   var bundle = {
     bundleVersion: '1.0.0',
@@ -155,7 +185,10 @@ module.exports = function buildMinivanBundle(graph, options) {
     attr = node.attributes;
 
     for (k in attr) {
-      if (NODE_ATTRIBUTES_TO_IGNORE.has(k))
+      if (
+        (nodeAttributesWhiteList && !nodeAttributesWhiteList.has(k)) ||
+        NODE_ATTRIBUTES_TO_IGNORE.has(k)
+      )
         continue;
 
       v = attr[k];
@@ -173,7 +206,10 @@ module.exports = function buildMinivanBundle(graph, options) {
     attr = edge.attributes;
 
     for (k in attr) {
-      if (EDGE_ATTRIBUTES_TO_IGNORE.has(k))
+      if (
+        (edgeAttributesWhiteList && !edgeAttributesWhiteList.has(k)) ||
+        EDGE_ATTRIBUTES_TO_IGNORE.has(k)
+      )
         continue;
 
       v = attr[k];

@@ -84,7 +84,7 @@ describe('graphology-minivan', function() {
 
       var errors = validate(bundle);
 
-      console.log(bundle);
+      // console.log(bundle);
 
       assert(!errors);
     });
@@ -95,9 +95,9 @@ describe('graphology-minivan', function() {
 
       // console.log(NORDIC_DESIGN.model.nodeAttributes.find(a => a.id === 'country'));
 
-      var bundle = buildMinivanBundle(graph);
+      var bundle = buildMinivanBundle(graph, {model: NORDIC_DESIGN.model});
 
-      // console.log(bundle)
+      console.log(bundle.model)
     });
   });
 });
