@@ -461,7 +461,7 @@ module.exports = function buildMinivanBundle(graph, options) {
   }
 
   // Finalization
-  var modality, palette, m, p;
+  var modality, palette, nd, m, p;
 
   // TODO: do this with edges
   for (k in nodeAttributes) {
@@ -484,11 +484,24 @@ module.exports = function buildMinivanBundle(graph, options) {
             (2 * graph.size)
           );
 
-          modality.flow[vf].normalizedDensity = (
+          nd = (
             (modality.flow[vf].count - modality.flow[vf].expected) /
             (4 * graph.size)
           );
+
+          modality.flow[vf].normalizedDensity = nd;
+
+          if (m !== vf) {
+            modality.outboundNormalizedDensity += nd;
+            modality.externalNormalizedDensity += nd;
+
+            targetModality.inboundNormalizedDensity += nd;
+            targetModality.externalNormalizedDensity += nd;
+          }
         }
+
+        // Updating normalized densities
+        modality.internalNormalizedDensity = modality.flow[m].normalizedDensity;
 
         // We give a color only if needed
         // TODO: this code is a bit different from the orignal minivan one!
