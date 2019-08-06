@@ -958,10 +958,6 @@
     ]
   },
   "graph": {
-    "settings": {
-      "type": "undirected",
-      "multi": false
-    },
     "attributes": {
       "creator": "Gephi 0.9",
       "description": "",
@@ -74591,5 +74587,9 @@
         "undirected": true
       }
     ]
+  },
+  "settings": {
+    "type": "undirected",
+    "multi": false
   }
 }

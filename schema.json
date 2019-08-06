@@ -43,25 +43,25 @@
       "title": "Date.",
       "type": "string"
     },
+    "settings": {
+      "title": "Graph settings.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Graph type.",
+          "type": "string",
+          "enum": ["mixed", "directed", "undirected"]
+        },
+        "multi": {
+          "title": "MultiGraph?",
+          "type": "boolean"
+        }
+      }
+    },
     "graph": {
       "title": "Graph data.",
       "type": "object",
       "properties": {
-        "settings": {
-          "title": "Graph settings.",
-          "type": "object",
-          "properties": {
-            "type": {
-              "title": "Graph type.",
-              "type": "string",
-              "enum": ["mixed", "directed", "undirected"]
-            },
-            "multi": {
-              "title": "MultiGraph?",
-              "type": "boolean"
-            }
-          }
-        },
         "attributes": {
           "title": "Graph-level attributes.",
           "type": "object"

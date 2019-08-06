@@ -124,11 +124,12 @@ if (bundle.edgeAttributes) {
 }
 
 newBundle.graph = {
-  settings: bundle.graphSettings,
   attributes: bundle.g.attributes,
   nodes: bundle.g.nodes,
   edges: bundle.g.edges
 };
+
+newBundle.settings = bundle.graphSettings;
 
 var validationErrors = validate(newBundle);
 

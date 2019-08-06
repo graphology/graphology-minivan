@@ -33,6 +33,7 @@ var EDGE_ATTRIBUTES_TO_IGNORE = new Set([
 ]);
 
 var VALID_ATTR_TYPES = new Set([
+  'ignore',
   'partition',
   'ranking-size',
   'ranking-color'
@@ -117,6 +118,10 @@ module.exports = function buildMinivanBundle(graph, options) {
   if (!isGraph(graph))
     throw new Error('graphology-minivan: the given graph is not a valid graphology instance.');
 
+  options = options || {};
+
+  var userModel = options.model || {};
+
   var bundle = {
     bundleVersion: '1.0.0',
     consolidated: true
@@ -134,6 +139,10 @@ module.exports = function buildMinivanBundle(graph, options) {
   // Serializing graph data
   var serialized = graph.export();
   bundle.graph = serialized;
+  bundle.settings = {
+    type: graph.type,
+    multi: graph.multi
+  };
 
   // First pass for type inference
   var nodeInferences = {},
@@ -281,10 +290,7 @@ module.exports = function buildMinivanBundle(graph, options) {
     node = serialized.nodes[i];
     attr = node.attributes;
 
-    for (k in attr) {
-      if (NODE_ATTRIBUTES_TO_IGNORE.has(k))
-        continue;
-
+    for (k in nodeAttributes) {
       v = attr[k];
       model = nodeAttributes[k];
 
@@ -337,25 +343,27 @@ module.exports = function buildMinivanBundle(graph, options) {
     }
   }
 
-  var sourceModality, targetModality;
+  var sourceModality, targetModality, o;
 
   for (i = 0, l = serialized.edges.length; i < l; i++) {
     edge = serialized.edges[i];
     attr = edge.attributes;
 
     // Modalities flow
+    // NOTE: it seems that minivan version only computes directed statistics!
     for (k in nodePartitionAttributes) {
       sourceModality = graph.getNodeAttribute(edge.source, k);
       targetModality = graph.getNodeAttribute(edge.target, k);
 
-      console.log(k, sourceModality, targetModality);
+      o = nodePartitionAttributes[k]
+        .modalities[sourceModality]
+        .flow[targetModality];
+
+      o.count++;
     }
 
     // Edge values
-    for (k in attr) {
-      if (EDGE_ATTRIBUTES_TO_IGNORE.has(k))
-        continue;
-
+    for (k in edgeAttributes) {
       v = attr[k];
       model = edgeAttributes[k];
 
@@ -367,7 +375,7 @@ module.exports = function buildMinivanBundle(graph, options) {
 
           model.modalities[v] = {
             value: v,
-            nodes: 1
+            edges: 1
           };
         }
         else {

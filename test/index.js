@@ -5,6 +5,8 @@
 require('util').inspect.defaultOptions.depth = null;
 
 var assert = require('assert');
+var path = require('path');
+var fs = require('fs-extra');
 var buildMinivanBundle = require('../index.js');
 var validate = require('../validate.js');
 var Graph = require('graphology');
@@ -60,6 +62,12 @@ var GRAPHS = {
   }
 };
 
+function loadResource(name) {
+  return fs.readJSONSync(path.join(__dirname, 'resources', name + '.json'));
+}
+
+var NORDIC_DESIGN = loadResource('nordic-design');
+
 describe('graphology-minivan', function() {
   describe('serialization', function() {
 
@@ -76,9 +84,20 @@ describe('graphology-minivan', function() {
 
       var errors = validate(bundle);
 
-      assert(!errors);
-
       console.log(bundle);
+
+      assert(!errors);
+    });
+
+    it('should be idempotent.', function() {
+      var graph = new Graph(NORDIC_DESIGN.settings);
+      graph.import(NORDIC_DESIGN.graph);
+
+      // console.log(NORDIC_DESIGN.model.nodeAttributes.find(a => a.id === 'country'));
+
+      var bundle = buildMinivanBundle(graph);
+
+      // console.log(bundle)
     });
   });
 });
