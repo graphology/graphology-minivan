@@ -12,9 +12,11 @@ var expect = chai.expect;
 
 var path = require('path');
 var fs = require('fs-extra');
-var buildMinivanBundle = require('../index.js');
+var lib = require('../index.js');
 var validate = require('../validate.js');
 var Graph = require('graphology');
+
+var buildMinivanBundle = lib.buildMinivanBundle;
 
 var UndirectedGraph = Graph.UndirectedGraph;
 

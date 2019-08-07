@@ -157,7 +157,7 @@ function userSpecOrDefault(userSpec, name, defaultValue) {
  */
 // TODO: add option to sample data for type inference
 // TODO: handle ignore type
-module.exports = function buildMinivanBundle(graph, options) {
+exports.buildMinivanBundle = function buildMinivanBundle(graph, options) {
   if (!isGraph(graph))
     throw new Error('graphology-minivan: the given graph is not a valid graphology instance.');
 
