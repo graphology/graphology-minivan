@@ -16,7 +16,7 @@ var lib = require('../index.js');
 var validate = require('../validate.js');
 var Graph = require('graphology');
 
-var buildMinivanBundle = lib.buildMinivanBundle;
+var buildBundle = lib.buildBundle;
 
 var UndirectedGraph = Graph.UndirectedGraph;
 
@@ -80,14 +80,14 @@ describe('graphology-minivan', function() {
 
     it('should throw if given an invalid graph.', function() {
       assert.throws(function() {
-        buildMinivanBundle({hello: 'world'});
+        buildBundle({hello: 'world'});
       });
     });
 
     it('should produce a correct bundle.', function() {
       var graph = UndirectedGraph.from(GRAPHS.basic);
 
-      var bundle = buildMinivanBundle(graph, {url: 'http://supergraph.sv'});
+      var bundle = buildBundle(graph, {url: 'http://supergraph.sv'});
 
       var errors = validate(bundle);
 
@@ -103,7 +103,7 @@ describe('graphology-minivan', function() {
       var graph = new Graph(NORDIC_DESIGN.settings);
       graph.import(NORDIC_DESIGN.graph);
 
-      var bundle = buildMinivanBundle(graph, NORDIC_DESIGN);
+      var bundle = buildBundle(graph, NORDIC_DESIGN);
 
       // console.log(bundle.model.nodeAttributes.find(m => m.id === 'branch').stats)
 
