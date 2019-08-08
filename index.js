@@ -10,10 +10,10 @@
  * 103(23), 8577–8582.
  * http://doi.org/10.1073/pnas.0601602103
  */
-var isGraph = require('graphology-utils/is-graph');
+var isGraph = require('graphology-utils/is-graph'),
+    iwanthue = require('iwanthue');
 
-var slugify = require('./slugify.js'),
-    palettes = require('./palettes.js');
+var slugify = require('./slugify.js');
 
 /**
  * Constants.
@@ -61,6 +61,13 @@ var DEFAULT_INVERT_SCALE = false;
 var DEFAULT_TRUNCATE_SCALE = true;
 
 var MIN_PROPORTION_FOR_COLOR = 0.01;
+
+var DEFAULT_COLOR_SPACE = {
+  cmin: 25.59,
+  cmax: 55.59,
+  lmin: 60.94,
+  lmax: 90.94
+};
 
 /**
  * Helpers.
@@ -141,6 +148,17 @@ function userSpecOrDefault(userSpec, name, defaultValue) {
     return userSpec[name];
 
   return defaultValue;
+}
+
+function generatePalette(count, name) {
+  if (count === 1)
+    return [DEFAULT_COLOR_DARK];
+
+  return iwanthue(count, {
+    colorSpace: DEFAULT_COLOR_SPACE,
+    seed: name,
+    clustering: 'force-vector'
+  });
 }
 
 /**
@@ -477,7 +495,7 @@ exports.buildBundle = function buildBundle(graph, options) {
     userSpec = userNodeAttributes && userNodeAttributes[k];
 
     if (spec.type === 'partition') {
-      palette = palettes[Math.min(9, spec.cardinality - 1)];
+      palette = generatePalette(spec.cardinality, spec.id);
 
       p = 0;
       for (m in spec.modalities) {
@@ -545,7 +563,7 @@ exports.buildBundle = function buildBundle(graph, options) {
     userSpec = userEdgeAttributes && userEdgeAttributes[k];
 
     if (spec.type === 'partition') {
-      palette = palettes[Math.min(9, spec.cardinality - 1)];
+      palette = generatePalette(spec.cardinality, spec.id);
 
       p = 0;
       for (m in spec.modalities) {
