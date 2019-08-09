@@ -161,6 +161,40 @@ function generatePalette(count, name) {
   });
 }
 
+var DEFAULT_NODE_COLOR_ORDER = {
+  'partition': 2,
+  'ranking-color': 1
+};
+
+function findSuitableDefaultColorAndSize(attributes) {
+  var bestColorAttr = null,
+      bestColorValue = -Infinity;
+
+  var bestSizeAttr = null,
+      bestSizeValue = -Infinity;
+
+  attributes.forEach(function(attr) {
+    var colorValue = DEFAULT_NODE_COLOR_ORDER[attr.type] || 0;
+
+    if (colorValue !== 0 && colorValue > bestColorValue) {
+      bestColorAttr = attr;
+      bestColorValue = colorValue;
+    }
+
+    var sizeValue = attr.type === 'ranking-size' ? 1 : 0;
+
+    if (sizeValue !== 0 && sizeValue > bestSizeValue) {
+      bestSizeAttr = attr;
+      bestSizeValue = sizeValue;
+    }
+  });
+
+  return {
+    color: bestColorAttr ? bestColorAttr.id : null,
+    size: bestSizeAttr ? bestSizeAttr.id : null
+  };
+}
+
 /**
  * Function taking a graphology Graph instance && some options and returning
  * a viable MiniVan bundle ready to stringify.
@@ -597,14 +631,29 @@ exports.buildBundle = function buildBundle(graph, options) {
     edgeAttributes: objectValues(edgeAttributes)
   };
 
+  // Default color & size attributes
+  var suitableDefaultNodeAttributes = findSuitableDefaultColorAndSize(bundle.model.nodeAttributes),
+      suitableDefaultEdgeAttributes = findSuitableDefaultColorAndSize(bundle.model.edgeAttributes);
+
   if (userModel && userModel.defaultNodeSize)
     bundle.model.defaultNodeSize = userModel.defaultNodeSize;
+  else if (suitableDefaultNodeAttributes.size)
+    bundle.model.defaultNodeSize = suitableDefaultNodeAttributes.size;
+
   if (userModel && userModel.defaultEdgeSize)
     bundle.model.defaultEdgeSize = userModel.defaultEdgeSize;
+  else if (suitableDefaultEdgeAttributes.size)
+    bundle.model.defaultEdgeSize = suitableDefaultEdgeAttributes.size;
+
   if (userModel && userModel.defaultNodeColor)
     bundle.model.defaultNodeColor = userModel.defaultNodeColor;
+  else if (suitableDefaultNodeAttributes.color)
+    bundle.model.defaultNodeColor = suitableDefaultNodeAttributes.color;
+
   if (userModel && userModel.defaultEdgeColor)
     bundle.model.defaultEdgeColor = userModel.defaultEdgeColor;
+  else if (suitableDefaultEdgeAttributes.color)
+    bundle.model.defaultEdgeColor = suitableDefaultEdgeAttributes.color;
 
   return bundle;
 };

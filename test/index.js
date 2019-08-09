@@ -94,9 +94,14 @@ describe('graphology-minivan', function() {
       if (errors)
         console.error('Validation error:', errors);
 
-      // console.log(bundle);
-
       assert(!errors);
+
+      var model = bundle.model;
+
+      assert.strictEqual(model.defaultNodeSize, 'nb');
+      assert.strictEqual(model.defaultEdgeSize, 'weight');
+      assert.strictEqual(model.defaultNodeColor, 'category');
+      assert.strictEqual(model.defaultEdgeColor, 'predicate');
     });
 
     it('should be idempotent.', function() {
