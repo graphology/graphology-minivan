@@ -52,6 +52,8 @@ var TYPE_TO_ATTR_TYPE = {
   integer: 'ranking-size'
 };
 
+var DEFAULT_TYPE_INFERENCE_SAMPLE_SIZE = 50;
+
 var DEFAULT_AREA_SCALING_INTERPOLATION = 'linear';
 var DEFAULT_COLOR_SCALE = 'interpolateGreys';
 var DEFAULT_COLOR_DARK = '#666';
@@ -205,18 +207,22 @@ function findSuitableDefaultColorAndSize(attributes) {
  * @note Something is not very right concerning non-scalar values! We will
  *       need to make some decisions at some point.
  *
- * @param  {Graph}  graph - Target graph.
- * @param  {object} hints - A partial bundle with metadata & model to complete.
+ * @param  {Graph}   graph    - Target graph.
+ * @param  {object}  hints    - A partial bundle with metadata & model to
+ *                              complete.
+ * @param  {object}  settings - Some settings:
+ * @param  {?number}   typeInferenceSampleSize - Size of sample to test for type
+ *                                               inference. Default to 100.
  * @return {object}
  */
-// TODO: add option to sample data for type inference
 // TODO: handle ignore type
 // TODO: option not to consolidate the bundle
-exports.buildBundle = function buildBundle(graph, hints) {
+exports.buildBundle = function buildBundle(graph, hints, settings) {
   if (!isGraph(graph))
     throw new Error('graphology-minivan: the given graph is not a valid graphology instance.');
 
   hints = hints || {};
+  settings = settings || {};
 
   // Extracting information from user's model
   var userModel = hints.model || {};
@@ -260,12 +266,17 @@ exports.buildBundle = function buildBundle(graph, hints) {
    * Type inference.
    * ---------------------------------------------------------------------------
    */
+  var typeInferenceSampleSize = DEFAULT_TYPE_INFERENCE_SAMPLE_SIZE;
+
+  if (settings.typeInferenceSampleSize)
+    typeInferenceSampleSize = settings.typeInferenceSampleSize;
+
   var nodeInferences = {},
       edgeInferences = {};
 
   var i, l, k, v, node, edge, attr, type, order;
 
-  for (i = 0, l = serialized.nodes.length; i < l; i++) {
+  for (i = 0, l = Math.min(serialized.nodes.length, typeInferenceSampleSize); i < l; i++) {
     node = serialized.nodes[i];
     attr = node.attributes;
 
@@ -286,7 +297,7 @@ exports.buildBundle = function buildBundle(graph, hints) {
     }
   }
 
-  for (i = 0, l = serialized.edges.length; i < l; i++) {
+  for (i = 0, l = Math.min(serialized.edges.length, typeInferenceSampleSize); i < l; i++) {
     edge = serialized.edges[i];
     attr = edge.attributes;
 
