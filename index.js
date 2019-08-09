@@ -226,6 +226,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
 
   // Extracting information from user's model
   var userModel = hints.model || {};
+
   var userNodeAttributes = userModel.nodeAttributes ?
     indexBy(userModel.nodeAttributes) :
     null;
