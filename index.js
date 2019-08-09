@@ -75,11 +75,11 @@ var DEFAULT_COLOR_SPACE = {
 /**
  * Helpers.
  */
-function makeOptionOrAttribute(bundle, graph, options) {
+function makeHintOrAttribute(bundle, graph, hints) {
 
   return function(name) {
-    if (options && options[name])
-      bundle[name] = options[name];
+    if (hints && hints[name])
+      bundle[name] = hints[name];
     else if (graph.hasAttribute(name))
       bundle[name] = graph.getAttribute(name);
   };
@@ -199,28 +199,27 @@ function findSuitableDefaultColorAndSize(attributes) {
 }
 
 /**
- * Function taking a graphology Graph instance && some options and returning
- * a viable MiniVan bundle ready to stringify.
+ * Function taking a graphology Graph instance, hint & some settings and
+ * returning a viable MiniVan bundle ready to stringify.
  *
  * @note Something is not very right concerning non-scalar values! We will
  *       need to make some decisions at some point.
  *
- * @param  {Graph}  graph    - Target graph.
- * @param  {object} options  - Options:
- * @param  {object}   model    - Graph's model.
+ * @param  {Graph}  graph - Target graph.
+ * @param  {object} hints - A partial bundle with metadata & model to complete.
  * @return {object}
  */
 // TODO: add option to sample data for type inference
 // TODO: handle ignore type
 // TODO: option not to consolidate the bundle
-exports.buildBundle = function buildBundle(graph, options) {
+exports.buildBundle = function buildBundle(graph, hints) {
   if (!isGraph(graph))
     throw new Error('graphology-minivan: the given graph is not a valid graphology instance.');
 
-  options = options || {};
+  hints = hints || {};
 
   // Extracting information from user's model
-  var userModel = options.model || {};
+  var userModel = hints.model || {};
   var userNodeAttributes = userModel.nodeAttributes ?
     indexBy(userModel.nodeAttributes) :
     null;
@@ -240,14 +239,14 @@ exports.buildBundle = function buildBundle(graph, options) {
     consolidated: true
   };
 
-  var optionOrAttribute = makeOptionOrAttribute(bundle, graph, options);
+  var hintOrAttribute = makeHintOrAttribute(bundle, graph, hints);
 
   // Gathering data
-  optionOrAttribute('title');
-  optionOrAttribute('description');
-  optionOrAttribute('url');
-  optionOrAttribute('date');
-  optionOrAttribute('authors'); // TODO: Might need some adjustments
+  hintOrAttribute('title');
+  hintOrAttribute('description');
+  hintOrAttribute('url');
+  hintOrAttribute('date');
+  hintOrAttribute('authors'); // TODO: Might need some adjustments
 
   // Serializing graph data
   var serialized = graph.export();
