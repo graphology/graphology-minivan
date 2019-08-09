@@ -64,6 +64,16 @@ var GRAPHS = {
           predicate: 'HAS'
         },
         undirected: true
+      },
+      {
+        source: 'B',
+        target: 'C',
+        attributes: {
+          weight: 45,
+          cardinality: 12,
+          predicate: 'LIKES'
+        },
+        undirected: true
       }
     ]
   }
@@ -113,6 +123,85 @@ describe('graphology-minivan', function() {
       // console.log(bundle.model.nodeAttributes.find(m => m.id === 'branch').stats)
 
       expect(bundle).to.roughly.deep.equal(NORDIC_DESIGN);
+    });
+
+    it('should drop some partition types heuristically.', function() {
+      var graph = new Graph(NORDIC_DESIGN.settings);
+      graph.import(NORDIC_DESIGN.graph);
+
+      var bundle = buildBundle(graph);
+
+      assert(!bundle.model.nodeAttributes.some(function(attr) {
+        return (
+          attr.id === 'name' ||
+          attr.id === 'homepage' ||
+          attr.id === 'prefixes'
+        );
+      }));
+
+      var partitions = bundle
+        .model
+        .nodeAttributes
+        .filter(function(attr) {
+          return attr.type === 'partition';
+        })
+        .map(function(attr) {
+          return {
+            id: attr.id,
+            cardinality: attr.cardinality
+          };
+        });
+
+      assert.deepEqual(partitions, [
+        {
+          id: 'country',
+          cardinality: 7
+        },
+        {
+          id: 'branch',
+          cardinality: 4
+        },
+        {
+          id: 'design-user-research',
+          cardinality: 3
+        },
+        {
+          id: 'digital-design',
+          cardinality: 3
+        },
+        {
+          id: 'experience-design',
+          cardinality: 3
+        },
+        {
+          id: 'graphic-and-visual-design',
+          cardinality: 3
+        },
+        {
+          id: 'management-facilitation-of-development-processes',
+          cardinality: 3
+        },
+        {
+          id: 'product-development',
+          cardinality: 3
+        },
+        {
+          id: 'service-design',
+          cardinality: 3
+        },
+        {
+          id: 'strategic-design',
+          cardinality: 3
+        },
+        {
+          id: 'styling-formgiving-of-products-physical-tactile-appearance',
+          cardinality: 3
+        },
+        {
+          id: 'discipline',
+          cardinality: 9
+        }
+      ]);
     });
   });
 });

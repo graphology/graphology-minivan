@@ -46,6 +46,7 @@ var TYPE_ORDER = {
 };
 
 var TYPE_TO_ATTR_TYPE = {
+  unknown: 'partition',
   string: 'partition',
   float: 'ranking-size',
   integer: 'ranking-size'
@@ -61,6 +62,8 @@ var DEFAULT_INVERT_SCALE = false;
 var DEFAULT_TRUNCATE_SCALE = true;
 
 var MIN_PROPORTION_FOR_COLOR = 0.01;
+var MAX_PARTITION_CARDINALITY_RATIO = 0.1;
+var MAX_PARTITION_CARDINALITY = 30;
 
 var DEFAULT_COLOR_SPACE = {
   cmin: 25.59,
@@ -418,6 +421,17 @@ exports.buildBundle = function buildBundle(graph, options) {
         if (!(v in spec.modalities)) {
           spec.cardinality++;
 
+          // If we have too much modalities for a partition we bail out
+          if (
+            (!userNodeAttributes || !(k in userNodeAttributes)) &&
+            spec.cardinality >= MAX_PARTITION_CARDINALITY &&
+            spec.cardinality >= MAX_PARTITION_CARDINALITY_RATIO * graph.order
+          ) {
+            delete nodeAttributes[k];
+            delete nodePartitionAttributes[k];
+            continue;
+          }
+
           spec.modalities[v] = {
             value: v,
             count: 1,
@@ -503,6 +517,16 @@ exports.buildBundle = function buildBundle(graph, options) {
         if (!(v in spec.modalities)) {
           spec.cardinality++;
 
+          // If we have too much modalities for a partition we bail out
+          if (
+            (!userNodeAttributes || !(k in userNodeAttributes)) &&
+            spec.cardinality >= MAX_PARTITION_CARDINALITY &&
+            spec.cardinality > MAX_PARTITION_CARDINALITY_RATIO * graph.size
+          ) {
+            delete edgeAttributes[k];
+            continue;
+          }
+
           spec.modalities[v] = {
             value: v,
             edges: 1
@@ -529,6 +553,11 @@ exports.buildBundle = function buildBundle(graph, options) {
     userSpec = userNodeAttributes && userNodeAttributes[k];
 
     if (spec.type === 'partition') {
+      if (!userSpec && spec.cardinality < 2) {
+        delete nodeAttributes[k];
+        continue;
+      }
+
       palette = generatePalette(spec.cardinality, spec.id);
 
       p = 0;
@@ -597,6 +626,11 @@ exports.buildBundle = function buildBundle(graph, options) {
     userSpec = userEdgeAttributes && userEdgeAttributes[k];
 
     if (spec.type === 'partition') {
+      if (!userSpec && spec.cardinality < 2) {
+        delete edgeAttributes[k];
+        continue;
+      }
+
       palette = generatePalette(spec.cardinality, spec.id);
 
       p = 0;
