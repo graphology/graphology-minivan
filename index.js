@@ -212,6 +212,7 @@ function findSuitableDefaultColorAndSize(attributes) {
  */
 // TODO: add option to sample data for type inference
 // TODO: handle ignore type
+// TODO: option not to consolidate the bundle
 exports.buildBundle = function buildBundle(graph, options) {
   if (!isGraph(graph))
     throw new Error('graphology-minivan: the given graph is not a valid graphology instance.');
