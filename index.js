@@ -97,7 +97,7 @@ function guessType(val) {
   }
 
   // NOTE: for now we consider non-scalar & booleans as strings
-  if (typeof val === 'number' || typeof val === 'boolean')
+  if (typeof val === 'object' || typeof val === 'boolean')
     return 'string';
 
   if (!val)
