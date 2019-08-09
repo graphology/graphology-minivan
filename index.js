@@ -256,7 +256,10 @@ exports.buildBundle = function buildBundle(graph, options) {
     multi: graph.multi
   };
 
-  // First pass for type inference
+  /**
+   * Type inference.
+   * ---------------------------------------------------------------------------
+   */
   var nodeInferences = {},
       edgeInferences = {};
 
@@ -304,7 +307,10 @@ exports.buildBundle = function buildBundle(graph, options) {
     }
   }
 
-  // Building model
+  /**
+   * Building model.
+   * ---------------------------------------------------------------------------
+   */
   var nodeAttributes = {},
       edgeAttributes = {},
       nodePartitionAttributes = {},
@@ -405,7 +411,10 @@ exports.buildBundle = function buildBundle(graph, options) {
     edgeAttributes[k] = spec;
   }
 
-  // Second pass to aggregate values & compute metrics
+  /**
+   * Consolidation & aggregate statistics.
+   * ---------------------------------------------------------------------------
+   */
   for (i = 0, l = serialized.nodes.length; i < l; i++) {
     node = serialized.nodes[i];
     attr = node.attributes;
@@ -545,7 +554,10 @@ exports.buildBundle = function buildBundle(graph, options) {
     }
   }
 
-  // Finalization
+  /**
+   * Final aggregations.
+   * ---------------------------------------------------------------------------
+   */
   var modality, palette, nd, m, p;
 
   for (k in nodeAttributes) {
@@ -660,6 +672,10 @@ exports.buildBundle = function buildBundle(graph, options) {
     }
   }
 
+  /**
+   * Finalization.
+   * ---------------------------------------------------------------------------
+   */
   bundle.model = {
     nodeAttributes: objectValues(nodeAttributes),
     edgeAttributes: objectValues(edgeAttributes)
