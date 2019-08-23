@@ -228,6 +228,43 @@ function findSuitableDefaultColorAndSize(attributes) {
 }
 
 /**
+ * Helper function used to perform type inference of nodes & edges attributes.
+ * This is useful to automatically assess which kind of attribute visual
+ * representation we will probably require.
+ */
+function performTypeInference(items, whiteList, ignore, sampleSize) {
+  var inference = {};
+
+  var i, l, k, v, item, attr, type, order;
+
+  for (i = 0, l = Math.min(items.length, sampleSize); i < l; i++) {
+    item = items[i];
+    attr = item.attributes;
+
+    if (!attr)
+      continue;
+
+    for (k in attr) {
+      if (
+        (whiteList && !whiteList.has(k)) ||
+        ignore.has(k)
+      )
+        continue;
+
+      v = attr[k];
+
+      type = guessType(v);
+      order = TYPE_ORDER[type];
+
+      if (!(k in inference) || order < TYPE_ORDER[inference[k]])
+        inference[k] = type;
+    }
+  }
+
+  return inference;
+}
+
+/**
  * Function taking a graphology Graph instance, hint & some settings and
  * returning a viable MiniVan bundle ready to stringify.
  *
@@ -301,63 +338,26 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
   if (settings.typeInferenceSampleSize)
     typeInferenceSampleSize = settings.typeInferenceSampleSize;
 
-  var nodeInferences = {},
-      edgeInferences = {};
+  var nodeInferences = performTypeInference(
+    serialized.nodes,
+    nodeAttributesWhiteList,
+    NODE_ATTRIBUTES_TO_IGNORE,
+    typeInferenceSampleSize
+  );
 
-  var i, l, k, v, node, edge, attr, type, order;
-
-  for (i = 0, l = Math.min(serialized.nodes.length, typeInferenceSampleSize); i < l; i++) {
-    node = serialized.nodes[i];
-    attr = node.attributes;
-
-    if (!attr)
-      continue;
-
-    for (k in attr) {
-      if (
-        (nodeAttributesWhiteList && !nodeAttributesWhiteList.has(k)) ||
-        NODE_ATTRIBUTES_TO_IGNORE.has(k)
-      )
-        continue;
-
-      v = attr[k];
-
-      type = guessType(v);
-      order = TYPE_ORDER[type];
-
-      if (!(k in nodeInferences) || order < TYPE_ORDER[nodeInferences[k]])
-        nodeInferences[k] = type;
-    }
-  }
-
-  for (i = 0, l = Math.min(serialized.edges.length, typeInferenceSampleSize); i < l; i++) {
-    edge = serialized.edges[i];
-    attr = edge.attributes;
-
-    if (!attr)
-      continue;
-
-    for (k in attr) {
-      if (
-        (edgeAttributesWhiteList && !edgeAttributesWhiteList.has(k)) ||
-        EDGE_ATTRIBUTES_TO_IGNORE.has(k)
-      )
-        continue;
-
-      v = attr[k];
-
-      type = guessType(v);
-      order = TYPE_ORDER[type];
-
-      if (!(k in edgeInferences) || order < TYPE_ORDER[edgeInferences[k]])
-        edgeInferences[k] = type;
-    }
-  }
+  var edgeInferences = performTypeInference(
+    serialized.edges,
+    edgeAttributesWhiteList,
+    EDGE_ATTRIBUTES_TO_IGNORE,
+    typeInferenceSampleSize
+  );
 
   /**
    * Building model.
    * ---------------------------------------------------------------------------
    */
+  var i, l, k, v, node, edge, attr, type;
+
   var nodeAttributes = {},
       edgeAttributes = {},
       nodePartitionAttributes = {},
