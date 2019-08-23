@@ -9,6 +9,7 @@ var chai = require('chai');
 chai.use(require('chai-roughly'));
 var assert = chai.assert;
 var expect = chai.expect;
+var deepclone = require('lodash/cloneDeep');
 
 var path = require('path');
 var fs = require('fs-extra');
@@ -112,6 +113,19 @@ describe('graphology-minivan', function() {
       assert.strictEqual(model.defaultEdgeSize, 'weight');
       assert.strictEqual(model.defaultNodeColor, 'category');
       assert.strictEqual(model.defaultEdgeColor, 'predicate');
+    });
+
+    it('should work even when some attributes are lacking.', function() {
+      var data = deepclone(GRAPHS.basic);
+
+      delete data.nodes[1].attributes;
+      delete data.edges[0].attributes;
+
+      var graph = UndirectedGraph.from(data);
+
+      assert.doesNotThrow(function() {
+        buildBundle(graph);
+      });
     });
 
     it('should be idempotent.', function() {

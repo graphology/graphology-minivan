@@ -139,8 +139,9 @@ function objectValues(o) {
 }
 
 function cast(attrType, val) {
+
   if (attrType === 'partition')
-    return val.toString();
+    return val ? val.toString() : 'undefined';
 
   return val;
 }
@@ -281,6 +282,9 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
     node = serialized.nodes[i];
     attr = node.attributes;
 
+    if (!attr)
+      continue;
+
     for (k in attr) {
       if (
         (nodeAttributesWhiteList && !nodeAttributesWhiteList.has(k)) ||
@@ -301,6 +305,9 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
   for (i = 0, l = Math.min(serialized.edges.length, typeInferenceSampleSize); i < l; i++) {
     edge = serialized.edges[i];
     attr = edge.attributes;
+
+    if (!attr)
+      continue;
 
     for (k in attr) {
       if (
@@ -431,9 +438,11 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
     node = serialized.nodes[i];
     attr = node.attributes;
 
+    if (!attr)
+      continue;
+
     for (k in nodeAttributes) {
       spec = nodeAttributes[k];
-
       v = cast(spec.type, attr[k]);
 
       spec.count++;
@@ -502,13 +511,22 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
     edge = serialized.edges[i];
     attr = edge.attributes;
 
+    if (!attr)
+      continue;
+
     // Modalities flow
     // NOTE: it seems that minivan version only computes directed statistics!
     for (k in nodePartitionAttributes) {
       spec = nodePartitionAttributes[k];
 
-      sourceModality = cast(spec.type, graph.getNodeAttribute(edge.source, k));
-      targetModality = cast(spec.type, graph.getNodeAttribute(edge.target, k));
+      sourceModality = graph.getNodeAttribute(edge.source, k);
+      targetModality = graph.getNodeAttribute(edge.target, k);
+
+      if (!sourceModality || !targetModality)
+        continue;
+
+      sourceModality = cast(spec.type, sourceModality);
+      targetModality = cast(spec.type, targetModality);
 
       o = spec.modalities[sourceModality]
 
