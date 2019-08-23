@@ -187,6 +187,22 @@ describe('graphology-minivan', function() {
       assert.strictEqual(categoryAttr.modalities.vegetable.color, '#00FF00');
     });
 
+    it('should be possible to pass custom iwanthue settings.', function() {
+      var graph = UndirectedGraph.from(GRAPHS.basic);
+
+      var bundle = buildBundle(graph, null, {iwanthueSettings: {clustering: 'k-means'}});
+
+      var categoryAttr = bundle.model.nodeAttributes.find(function(attr) {
+        return attr.key === 'category';
+      });
+
+      var colors = Object.keys(categoryAttr.modalities).map(function(m) {
+        return categoryAttr.modalities[m].color;
+      });
+
+      assert.deepEqual(colors, ['#aac790', '#c9a2ca']);
+    });
+
     it('should be idempotent.', function() {
       var graph = new Graph(NORDIC_DESIGN.settings);
       graph.import(NORDIC_DESIGN.graph);

@@ -180,15 +180,17 @@ function userSpecOrDefault(userSpec, name, defaultValue) {
   return defaultValue;
 }
 
-function generatePalette(count, name) {
+function generatePalette(count, name, userSettings) {
   if (count === 1)
     return [DEFAULT_COLOR_DARK];
 
-  return iwanthue(count, {
+  var settings = Object.assign({}, {
     colorSpace: DEFAULT_COLOR_SPACE,
     seed: name,
     clustering: 'force-vector'
-  });
+  }, userSettings);
+
+  return iwanthue(count, settings);
 }
 
 var DEFAULT_NODE_COLOR_ORDER = {
@@ -236,6 +238,8 @@ function findSuitableDefaultColorAndSize(attributes) {
  * @param  {object}  hints    - A partial bundle with metadata & model to
  *                              complete.
  * @param  {object}  settings - Some settings:
+ * @param  {object}    iwanthueSettings        - Custom iwanthue settings for
+ *                                               palette settings.
  * @param  {?number}   typeInferenceSampleSize - Size of sample to test for type
  *                                               inference. Default to 100.
  * @return {object}
@@ -626,7 +630,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
         continue;
       }
 
-      palette = generatePalette(spec.cardinality, spec.key);
+      palette = generatePalette(spec.cardinality, spec.key, settings.iwanthueSettings);
 
       p = 0;
       for (m in spec.modalities) {
@@ -699,7 +703,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
         continue;
       }
 
-      palette = generatePalette(spec.cardinality, spec.key);
+      palette = generatePalette(spec.cardinality, spec.key, settings.iwanthueSettings);
 
       p = 0;
       for (m in spec.modalities) {
