@@ -131,16 +131,27 @@ describe('graphology-minivan', function() {
     it('should respect given hints.', function() {
       var graph = UndirectedGraph.from(GRAPHS.basic);
 
+      // TODO: support to have only id of attr to index
+
       var hints = {
         model: {
           nodeAttributes: [
             {
               id: 'centrality',
-              name: 'Node Centrality',
+              name: 'centrality',
               type: 'ranking-size',
               integer: true,
               areaScaling: {
                 interpolation: 'pow-2'
+              }
+            },
+            {
+              id: 'category',
+              type: 'partition',
+              modalities: {
+                vegetable: {
+                  color: '#00FF00'
+                }
               }
             }
           ]
@@ -149,11 +160,13 @@ describe('graphology-minivan', function() {
 
       var bundle = buildBundle(graph, hints);
 
-      var centralityAttr = bundle.model.nodeAttributes.find(attr => attr.id === 'centrality');
+      var centralityAttr = bundle.model.nodeAttributes.find(function(attr) {
+        return attr.id === 'centrality';
+      });
 
       assert.deepEqual(centralityAttr, {
         id: 'centrality',
-        name: 'Node Centrality',
+        name: 'centrality',
         count: 3,
         type: 'ranking-size',
         min: -18,
@@ -164,7 +177,13 @@ describe('graphology-minivan', function() {
           max: 100,
           interpolation: 'pow-2'
         }
-      })
+      });
+
+      var categoryAttr = bundle.model.nodeAttributes.find(function(attr) {
+        return attr.id === 'category';
+      });
+
+      assert.strictEqual(categoryAttr.modalities.vegetable.color, '#00FF00');
     });
 
     it('should be idempotent.', function() {
@@ -174,7 +193,6 @@ describe('graphology-minivan', function() {
       var bundle = buildBundle(graph, NORDIC_DESIGN);
 
       // console.log(bundle.model.nodeAttributes.find(m => m.id === 'branch').stats)
-
       expect(bundle).to.roughly.deep.equal(NORDIC_DESIGN);
     });
 
