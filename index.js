@@ -278,7 +278,7 @@ function performTypeInference(items, whiteList, ignore, sampleSize) {
  * @param  {object}    iwanthueSettings        - Custom iwanthue settings for
  *                                               palette settings.
  * @param  {?number}   typeInferenceSampleSize - Size of sample to test for type
- *                                               inference. Default to 100.
+ *                                               inference. Default to 50.
  * @return {object}
  */
 // TODO: handle ignore type
