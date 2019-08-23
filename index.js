@@ -32,12 +32,12 @@ var EDGE_ATTRIBUTES_TO_IGNORE = new Set([
   'color'
 ]);
 
-var VALID_ATTR_TYPES = new Set([
-  'ignore',
-  'partition',
-  'ranking-size',
-  'ranking-color'
-]);
+// var VALID_ATTR_TYPES = new Set([
+//   'ignore',
+//   'partition',
+//   'ranking-size',
+//   'ranking-color'
+// ]);
 
 var TYPE_ORDER = {
   string: 0,
@@ -522,13 +522,13 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
       sourceModality = graph.getNodeAttribute(edge.source, k);
       targetModality = graph.getNodeAttribute(edge.target, k);
 
-      if (!sourceModality || !targetModality)
+      if (!sourceModality || !targetModality)
         continue;
 
       sourceModality = cast(spec.type, sourceModality);
       targetModality = cast(spec.type, targetModality);
 
-      o = spec.modalities[sourceModality]
+      o = spec.modalities[sourceModality];
 
       if (sourceModality === targetModality) {
         o.internalEdges += 1;
