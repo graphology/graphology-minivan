@@ -528,19 +528,20 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
 
   var vf;
 
-  for (k in nodePartitionAttributes) {
-    spec = nodePartitionAttributes[k];
+  if (consolidated)
+    for (k in nodePartitionAttributes) {
+      spec = nodePartitionAttributes[k];
 
-    for (v in spec.modalities) {
-      for (vf in spec.modalities) {
-        spec.modalities[v].flow[vf] = {
-          count: 0,
-          expected: 0,
-          normalizedDensity: 0
-        };
+      for (v in spec.modalities) {
+        for (vf in spec.modalities) {
+          spec.modalities[v].flow[vf] = {
+            count: 0,
+            expected: 0,
+            normalizedDensity: 0
+          };
+        }
       }
     }
-  }
 
   var sourceModality, targetModality, o;
 
@@ -553,34 +554,35 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
 
     // Modalities flow
     // NOTE: it seems that minivan version only computes directed statistics!
-    for (k in nodePartitionAttributes) {
-      spec = nodePartitionAttributes[k];
+    if (consolidated)
+      for (k in nodePartitionAttributes) {
+        spec = nodePartitionAttributes[k];
 
-      sourceModality = graph.getNodeAttribute(edge.source, k);
-      targetModality = graph.getNodeAttribute(edge.target, k);
+        sourceModality = graph.getNodeAttribute(edge.source, k);
+        targetModality = graph.getNodeAttribute(edge.target, k);
 
-      if (!sourceModality || !targetModality)
-        continue;
+        if (!sourceModality || !targetModality)
+          continue;
 
-      sourceModality = cast(spec, sourceModality);
-      targetModality = cast(spec, targetModality);
+        sourceModality = cast(spec, sourceModality);
+        targetModality = cast(spec, targetModality);
 
-      o = spec.modalities[sourceModality];
+        o = spec.modalities[sourceModality];
 
-      if (sourceModality === targetModality) {
-        o.internalEdges += 1;
+        if (sourceModality === targetModality) {
+          o.internalEdges += 1;
+        }
+        else {
+          o.outboundEdges += 1;
+          o.externalEdges += 1;
+          spec.modalities[targetModality].inboundEdges += 1;
+          spec.modalities[targetModality].externalEdges += 1;
+        }
+
+        o = o.flow[targetModality];
+
+        o.count++;
       }
-      else {
-        o.outboundEdges += 1;
-        o.externalEdges += 1;
-        spec.modalities[targetModality].inboundEdges += 1;
-        spec.modalities[targetModality].externalEdges += 1;
-      }
-
-      o = o.flow[targetModality];
-
-      o.count++;
-    }
 
     // Edge values
     for (k in edgeAttributes) {
@@ -644,38 +646,41 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
         modality = spec.modalities[m];
 
         // Updating flow
-        for (vf in modality.flow) {
-          targetModality = spec.modalities[vf];
+        if (consolidated) {
 
-          modality.flow[vf].expected = (
-            (modality.internalEdges + modality.outboundEdges) *
-            (targetModality.internalEdges + targetModality.inboundEdges) /
-            (2 * graph.size)
-          );
+          for (vf in modality.flow) {
+            targetModality = spec.modalities[vf];
 
-          nd = (
-            (modality.flow[vf].count - modality.flow[vf].expected) /
-            (4 * graph.size)
-          );
+            modality.flow[vf].expected = (
+              (modality.internalEdges + modality.outboundEdges) *
+              (targetModality.internalEdges + targetModality.inboundEdges) /
+              (2 * graph.size)
+            );
 
-          modality.flow[vf].normalizedDensity = nd;
+            nd = (
+              (modality.flow[vf].count - modality.flow[vf].expected) /
+              (4 * graph.size)
+            );
 
-          if (m !== vf) {
-            modality.outboundNormalizedDensity += nd;
-            modality.externalNormalizedDensity += nd;
+            modality.flow[vf].normalizedDensity = nd;
 
-            targetModality.inboundNormalizedDensity += nd;
-            targetModality.externalNormalizedDensity += nd;
+            if (m !== vf) {
+              modality.outboundNormalizedDensity += nd;
+              modality.externalNormalizedDensity += nd;
 
-            spec.stats.modularity -= nd;
+              targetModality.inboundNormalizedDensity += nd;
+              targetModality.externalNormalizedDensity += nd;
+
+              spec.stats.modularity -= nd;
+            }
+            else {
+              spec.stats.modularity += nd;
+            }
           }
-          else {
-            spec.stats.modularity += nd;
-          }
+
+          // Updating normalized densities
+          modality.internalNormalizedDensity = modality.flow[m].normalizedDensity;
         }
-
-        // Updating normalized densities
-        modality.internalNormalizedDensity = modality.flow[m].normalizedDensity;
 
         if (
           userSpec &&

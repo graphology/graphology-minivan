@@ -213,6 +213,13 @@ describe('graphology-minivan', function() {
       expect(bundle).to.roughly.deep.equal(NORDIC_DESIGN);
     });
 
+    it('should be faster when we don\'t consolidate.', function() {
+      var graph = new Graph(NORDIC_DESIGN.settings);
+      graph.import(NORDIC_DESIGN.graph);
+
+      buildBundle(graph, NORDIC_DESIGN, {consolidate: false});
+    });
+
     it('should drop some partition types heuristically.', function() {
       var graph = new Graph(NORDIC_DESIGN.settings);
       graph.import(NORDIC_DESIGN.graph);
