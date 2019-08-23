@@ -138,20 +138,44 @@ function objectValues(o) {
   return values;
 }
 
-function cast(attrType, val) {
+function cast(attr, val) {
 
-  if (attrType === 'partition')
+  if (attr.type === 'partition')
     return val ? val.toString() : 'undefined';
+
+  if (attr.integer)
+    return Math.trunc(+val);
 
   return val;
 }
+
+var USER_SPEC_MERGERS = {
+  areaScaling: function(user, defaults) {
+    var toMerge = {};
+
+    if (user.interpolation)
+      toMerge.interpolation = user.interpolation;
+
+    return Object.assign(
+      {},
+      defaults,
+      toMerge
+    );
+  }
+};
 
 function userSpecOrDefault(userSpec, name, defaultValue) {
   if (!userSpec)
     return defaultValue;
 
-  if (name in userSpec)
+  if (name in userSpec) {
+    var merger = USER_SPEC_MERGERS[name];
+
+    if (merger)
+      return merger(userSpec[name], defaultValue);
+
     return userSpec[name];
+  }
 
   return defaultValue;
 }
@@ -218,6 +242,7 @@ function findSuitableDefaultColorAndSize(attributes) {
  */
 // TODO: handle ignore type
 // TODO: option not to consolidate the bundle
+// TODO: right now, if user provides model, it will be used as a whitelist
 exports.buildBundle = function buildBundle(graph, hints, settings) {
   if (!isGraph(graph))
     throw new Error('graphology-minivan: the given graph is not a valid graphology instance.');
@@ -348,7 +373,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
 
     spec = {
       id: userSpec ? userSpec.id : slug,
-      name: userSpec ? userSpec.name : k,
+      name: userSpecOrDefault(userSpec, 'name', k),
       count: 0,
       type: attrType
     };
@@ -399,7 +424,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
 
     spec = {
       id: userSpec ? userSpec.id : slug,
-      name: userSpec ? userSpec.name : k,
+      name: userSpecOrDefault(userSpec, 'name', k),
       count: 0,
       type: attrType
     };
@@ -443,7 +468,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
 
     for (k in nodeAttributes) {
       spec = nodeAttributes[k];
-      v = cast(spec.type, attr[k]);
+      v = cast(spec, attr[k]);
 
       spec.count++;
 
@@ -525,8 +550,8 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
       if (!sourceModality || !targetModality)
         continue;
 
-      sourceModality = cast(spec.type, sourceModality);
-      targetModality = cast(spec.type, targetModality);
+      sourceModality = cast(spec, sourceModality);
+      targetModality = cast(spec, targetModality);
 
       o = spec.modalities[sourceModality];
 
@@ -548,7 +573,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
     // Edge values
     for (k in edgeAttributes) {
       spec = edgeAttributes[k];
-      v = cast(spec.type, attr[k]);
+      v = cast(spec, attr[k]);
 
       spec.count++;
 

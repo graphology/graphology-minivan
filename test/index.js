@@ -128,6 +128,45 @@ describe('graphology-minivan', function() {
       });
     });
 
+    it('should respect given hints.', function() {
+      var graph = UndirectedGraph.from(GRAPHS.basic);
+
+      var hints = {
+        model: {
+          nodeAttributes: [
+            {
+              id: 'centrality',
+              name: 'Node Centrality',
+              type: 'ranking-size',
+              integer: true,
+              areaScaling: {
+                interpolation: 'pow-2'
+              }
+            }
+          ]
+        }
+      };
+
+      var bundle = buildBundle(graph, hints);
+
+      var centralityAttr = bundle.model.nodeAttributes.find(attr => attr.id === 'centrality');
+
+      assert.deepEqual(centralityAttr, {
+        id: 'centrality',
+        name: 'Node Centrality',
+        count: 3,
+        type: 'ranking-size',
+        min: -18,
+        max: 13,
+        integer: true,
+        areaScaling: {
+          min: 10,
+          max: 100,
+          interpolation: 'pow-2'
+        }
+      })
+    });
+
     it('should be idempotent.', function() {
       var graph = new Graph(NORDIC_DESIGN.settings);
       graph.import(NORDIC_DESIGN.graph);
