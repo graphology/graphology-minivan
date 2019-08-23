@@ -271,10 +271,15 @@ function performTypeInference(items, whiteList, ignore, sampleSize) {
  * @note Something is not very right concerning non-scalar values! We will
  *       need to make some decisions at some point.
  *
+ * @note Right now, user-provided model acts as a whitelist. Maybe we will
+ *       want to change this in the future.
+ *
  * @param  {Graph}   graph    - Target graph.
  * @param  {object}  hints    - A partial bundle with metadata & model to
  *                              complete.
  * @param  {object}  settings - Some settings:
+ * @param  {boolean}   consolidate             - Whether to consolidate the
+ *                                               output or not.
  * @param  {object}    iwanthueSettings        - Custom iwanthue settings for
  *                                               palette settings.
  * @param  {?number}   typeInferenceSampleSize - Size of sample to test for type
@@ -282,14 +287,16 @@ function performTypeInference(items, whiteList, ignore, sampleSize) {
  * @return {object}
  */
 // TODO: handle ignore type
-// TODO: option not to consolidate the bundle
-// TODO: right now, if user provides model, it will be used as a whitelist
+// TODO: possibility to pass already serialized graph
 exports.buildBundle = function buildBundle(graph, hints, settings) {
   if (!isGraph(graph))
     throw new Error('graphology-minivan: the given graph is not a valid graphology instance.');
 
   hints = hints || {};
   settings = settings || {};
+
+  // Consolidation means we need to compute metrics costly in memory & time
+  var consolidated = settings.consolidate === false ? false : true;
 
   // Extracting information from user's model
   var userModel = hints.model || {};
@@ -309,7 +316,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
 
   var bundle = {
     bundleVersion: '1.0.0',
-    consolidated: true
+    consolidated: consolidated
   };
 
   var hintOrAttribute = makeHintOrAttribute(bundle, graph, hints);
