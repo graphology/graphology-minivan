@@ -2,12 +2,28 @@
 // Script converting MiniVan alpha bundle to the current format
 var validate = require('../validate.js');
 var stats = require('simple-statistics');
+var slugify = require('../slugify.js');
 
 var extent = stats.extent;
 
 require('util').inspect.defaultOptions.depth = null;
 
+function rename(k1, k2, o) {
+  if (k1 === k2)
+    return;
+
+  if (k1 in o) {
+    o[k2] = o[k1];
+    delete o[k1];
+  }
+}
+
 var bundle = require(process.argv.slice(-1)[0]);
+
+var renamers = {
+  node: {},
+  edge: {}
+};
 
 var newBundle = {
   title: bundle.title,
@@ -41,13 +57,22 @@ if (bundle.defaultEdgeSize)
 
 if (bundle.nodeAttributes) {
   newBundle.model.nodeAttributes = bundle.nodeAttributes.map(function(attr) {
+    var oldId = attr.id;
+
+    attr.slug = slugify(oldId);
+    attr.label = attr.name;
+    attr.key = attr.slug;
+
+    renamers.node[oldId] = rename.bind(null, oldId, attr.key);
+
     if (attr.type === 'partition') {
       var oldModalities = attr.modalities,
           data = attr.data;
 
       attr = {
-        id: attr.id,
-        name: attr.name,
+        slug: attr.slug,
+        label: attr.label,
+        key: attr.key,
         count: attr.count,
         cardinality: 0,
         type: 'partition',
@@ -91,9 +116,13 @@ if (bundle.nodeAttributes) {
 
     // Dropping redundancy
     else if (attr.type === 'ranking-color') {
+      delete attr.id;
+      delete attr.name;
       delete attr.areaScaling;
     }
     else if (attr.type === 'ranking-size') {
+      delete attr.id;
+      delete attr.name;
       delete attr.colorScale;
       delete attr.invertScale;
       delete attr.truncateScale;
@@ -105,7 +134,7 @@ if (bundle.nodeAttributes) {
       (!('min' in attr) || !('max' in attr))
     ) {
       var minmax = extent(bundle.g.nodes.map(function(node) {
-        return node.attributes[attr.id];
+        return node.attributes[attr.key];
       }));
 
       attr.min = minmax[0];
@@ -120,12 +149,21 @@ if (bundle.nodeAttributes) {
 
 if (bundle.edgeAttributes) {
   newBundle.model.edgeAttributes = bundle.edgeAttributes.map(function(attr) {
+    var oldId = attr.id;
+
+    attr.slug = slugify(oldId);
+    attr.label = attr.name;
+    attr.key = attr.slug;
+
+    renamers.edge[oldId] = rename.bind(null, oldId, attr.key);
+
     if (attr.type === 'partition') {
       var oldModalities = attr.modalities;
 
       attr = {
-        id: attr.id,
-        name: attr.name,
+        slug: attr.slug,
+        label: attr.label,
+        key: attr.key,
         count: attr.count,
         cardinality: 0,
         type: 'partition',
@@ -145,9 +183,13 @@ if (bundle.edgeAttributes) {
 
     // Dropping redundancy
     else if (attr.type === 'ranking-color') {
+      delete attr.id;
+      delete attr.name;
       delete attr.areaScaling;
     }
     else if (attr.type === 'ranking-size') {
+      delete attr.id;
+      delete attr.name;
       delete attr.colorScale;
       delete attr.invertScale;
       delete attr.truncateScale;
@@ -159,7 +201,7 @@ if (bundle.edgeAttributes) {
       (!('min' in attr) || !('max' in attr))
     ) {
       var minmax = extent(bundle.g.edges.map(function(edge) {
-        return edge.attributes[attr.id];
+        return edge.attributes[attr.key];
       }));
 
       attr.min = minmax[0];
@@ -172,11 +214,26 @@ if (bundle.edgeAttributes) {
   });
 }
 
+function batchRename(r, l) {
+  l.forEach(function(item) {
+    if (!item.attributes)
+      return;
+
+    for (var k in item.attributes) {
+      if (k in r)
+        r[k](item.attributes);
+    }
+  });
+}
+
 newBundle.graph = {
   attributes: bundle.g.attributes,
   nodes: bundle.g.nodes,
   edges: bundle.g.edges
 };
+
+batchRename(renamers.node, newBundle.graph.nodes);
+batchRename(renamers.edge, newBundle.graph.edges);
 
 newBundle.settings = bundle.graphSettings;
 

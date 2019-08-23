@@ -124,7 +124,7 @@ function indexBy(a) {
   var index = {};
 
   for (var i = 0, l = a.length; i < l; i++)
-    index[a[i].id] = a[i];
+    index[a[i].key] = a[i];
 
   return index;
 }
@@ -220,8 +220,8 @@ function findSuitableDefaultColorAndSize(attributes) {
   });
 
   return {
-    color: bestColorAttr ? bestColorAttr.id : null,
-    size: bestSizeAttr ? bestSizeAttr.id : null
+    color: bestColorAttr ? bestColorAttr.key : null,
+    size: bestSizeAttr ? bestSizeAttr.key : null
   };
 }
 
@@ -259,7 +259,6 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
   var userEdgeAttributes = userModel.edgeAttributes ?
     indexBy(userModel.edgeAttributes) :
     null;
-
   var nodeAttributesWhiteList = userNodeAttributes ?
     new Set(Object.keys(userNodeAttributes)) :
     null;
@@ -372,8 +371,9 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
     allocatedSlugs.add(slug);
 
     spec = {
-      id: userSpec ? userSpec.id : slug,
-      name: userSpecOrDefault(userSpec, 'name', k),
+      slug: userSpecOrDefault(userSpec, 'slug', slug),
+      label: userSpecOrDefault(userSpec, 'label', k),
+      key: k,
       count: 0,
       type: attrType
     };
@@ -423,8 +423,9 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
     allocatedSlugs.add(slug);
 
     spec = {
-      id: userSpec ? userSpec.id : slug,
-      name: userSpecOrDefault(userSpec, 'name', k),
+      slug: userSpecOrDefault(userSpec, 'slug', k),
+      label: userSpecOrDefault(userSpec, 'label', k),
+      key: k,
       count: 0,
       type: attrType
     };
@@ -625,7 +626,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
         continue;
       }
 
-      palette = generatePalette(spec.cardinality, spec.id);
+      palette = generatePalette(spec.cardinality, spec.key);
 
       p = 0;
       for (m in spec.modalities) {
@@ -698,7 +699,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
         continue;
       }
 
-      palette = generatePalette(spec.cardinality, spec.id);
+      palette = generatePalette(spec.cardinality, spec.key);
 
       p = 0;
       for (m in spec.modalities) {

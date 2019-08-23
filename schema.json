@@ -150,12 +150,16 @@
               {
                 "type": "object",
                 "properties": {
-                  "id": {
-                    "title": "Node attribute's id. Must be unique and a slug.",
+                  "slug": {
+                    "title": "Node attribute's slug. Must be unique and url safe.",
                     "type": "string"
                   },
-                  "name": {
+                  "label": {
                     "title": "Node attribute's human-readable label.",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Node attribute's data key.",
                     "type": "string"
                   },
                   "count": {
@@ -194,7 +198,7 @@
                       "interpolation": {
                         "title": "Scale interpolation.",
                         "type": "string",
-                        "enum": ["linear", "pow-2"]
+                        "enum": ["linear", "pow-2", "pow-3"]
                       }
                     }
                   }
@@ -204,12 +208,16 @@
               {
                 "type": "object",
                 "properties": {
-                  "id": {
-                    "title": "Node attribute's id. Must be unique and a slug.",
+                  "slug": {
+                    "title": "Node attribute's slug. Must be unique and url safe.",
                     "type": "string"
                   },
-                  "name": {
+                  "label": {
                     "title": "Node attribute's human-readable label.",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Node attribute's data key.",
                     "type": "string"
                   },
                   "count": {
@@ -278,12 +286,16 @@
               {
                 "type": "object",
                 "properties": {
-                  "id": {
-                    "title": "Node attribute's id. Must be unique and a slug.",
+                  "slug": {
+                    "title": "Node attribute's slug. Must be unique and url safe.",
                     "type": "string"
                   },
-                  "name": {
+                  "label": {
                     "title": "Node attribute's human-readable label.",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Node attribute's data key.",
                     "type": "string"
                   },
                   "count": {
@@ -399,12 +411,16 @@
               {
                 "type": "object",
                 "properties": {
-                  "id": {
-                    "title": "Edge attribute's id. Must be unique and a slug.",
+                  "slug": {
+                    "title": "Edge attribute's slug. Must be unique and url safe.",
                     "type": "string"
                   },
-                  "name": {
+                  "label": {
                     "title": "Edge attribute's human-readable label.",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Edge attribute's data key.",
                     "type": "string"
                   },
                   "count": {
@@ -443,7 +459,7 @@
                       "interpolation": {
                         "title": "Scale interpolation.",
                         "type": "string",
-                        "enum": ["linear", "pow-2"]
+                        "enum": ["linear", "pow-2", "pow-3"]
                       }
                     }
                   }
@@ -453,12 +469,16 @@
               {
                 "type": "object",
                 "properties": {
-                  "id": {
-                    "title": "Edge attribute's id. Must be unique and a slug.",
+                  "slug": {
+                    "title": "Edge attribute's slug. Must be unique and url safe.",
                     "type": "string"
                   },
-                  "name": {
+                  "label": {
                     "title": "Edge attribute's human-readable label.",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Edge attribute's data key.",
                     "type": "string"
                   },
                   "count": {
@@ -527,12 +547,16 @@
               {
                 "type": "object",
                 "properties": {
-                  "id": {
-                    "title": "Edge attribute's id. Must be unique and a slug.",
+                  "slug": {
+                    "title": "Edge attribute's slug. Must be unique and url safe.",
                     "type": "string"
                   },
-                  "name": {
+                  "label": {
                     "title": "Edge attribute's human-readable label.",
+                    "type": "string"
+                  },
+                  "key": {
+                    "title": "Edge attribute's data key.",
                     "type": "string"
                   },
                   "count": {

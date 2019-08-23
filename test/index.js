@@ -131,14 +131,14 @@ describe('graphology-minivan', function() {
     it('should respect given hints.', function() {
       var graph = UndirectedGraph.from(GRAPHS.basic);
 
-      // TODO: support to have only id of attr to index
+      // TODO: support to have only key of attr to index
 
       var hints = {
         model: {
           nodeAttributes: [
             {
-              id: 'centrality',
-              name: 'centrality',
+              key: 'centrality',
+              label: 'centrality',
               type: 'ranking-size',
               integer: true,
               areaScaling: {
@@ -146,7 +146,7 @@ describe('graphology-minivan', function() {
               }
             },
             {
-              id: 'category',
+              key: 'category',
               type: 'partition',
               modalities: {
                 vegetable: {
@@ -161,12 +161,13 @@ describe('graphology-minivan', function() {
       var bundle = buildBundle(graph, hints);
 
       var centralityAttr = bundle.model.nodeAttributes.find(function(attr) {
-        return attr.id === 'centrality';
+        return attr.key === 'centrality';
       });
 
       assert.deepEqual(centralityAttr, {
-        id: 'centrality',
-        name: 'centrality',
+        key: 'centrality',
+        label: 'centrality',
+        slug: 'centrality',
         count: 3,
         type: 'ranking-size',
         min: -18,
@@ -180,7 +181,7 @@ describe('graphology-minivan', function() {
       });
 
       var categoryAttr = bundle.model.nodeAttributes.find(function(attr) {
-        return attr.id === 'category';
+        return attr.key === 'category';
       });
 
       assert.strictEqual(categoryAttr.modalities.vegetable.color, '#00FF00');
@@ -204,9 +205,9 @@ describe('graphology-minivan', function() {
 
       assert(!bundle.model.nodeAttributes.some(function(attr) {
         return (
-          attr.id === 'name' ||
-          attr.id === 'homepage' ||
-          attr.id === 'prefixes'
+          attr.key === 'name' ||
+          attr.key === 'homepage' ||
+          attr.key === 'prefixes'
         );
       }));
 
@@ -218,58 +219,58 @@ describe('graphology-minivan', function() {
         })
         .map(function(attr) {
           return {
-            id: attr.id,
+            key: attr.key,
             cardinality: attr.cardinality
           };
         });
 
       assert.deepEqual(partitions, [
         {
-          id: 'country',
+          key: 'country',
           cardinality: 7
         },
         {
-          id: 'branch',
+          key: 'branch',
           cardinality: 4
         },
         {
-          id: 'design-user-research',
+          key: 'design-user-research',
           cardinality: 3
         },
         {
-          id: 'digital-design',
+          key: 'digital-design',
           cardinality: 3
         },
         {
-          id: 'experience-design',
+          key: 'experience-design',
           cardinality: 3
         },
         {
-          id: 'graphic-and-visual-design',
+          key: 'graphic-and-visual-design',
           cardinality: 3
         },
         {
-          id: 'management-facilitation-of-development-processes',
+          key: 'management-facilitation-of-development-processes',
           cardinality: 3
         },
         {
-          id: 'product-development',
+          key: 'product-development',
           cardinality: 3
         },
         {
-          id: 'service-design',
+          key: 'service-design',
           cardinality: 3
         },
         {
-          id: 'strategic-design',
+          key: 'strategic-design',
           cardinality: 3
         },
         {
-          id: 'styling-formgiving-of-products-physical-tactile-appearance',
+          key: 'styling-formgiving-of-products-physical-tactile-appearance',
           cardinality: 3
         },
         {
-          id: 'discipline',
+          key: 'discipline',
           cardinality: 9
         }
       ]);
