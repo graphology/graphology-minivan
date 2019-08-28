@@ -140,8 +140,17 @@ function objectValues(o) {
 
 function cast(attr, val) {
 
-  if (attr.type === 'partition')
-    return val ? val.toString() : 'undefined';
+  if (attr.type === 'partition') {
+    if (val === undefined) {
+      return 'undefined';
+    }
+    else if (val === null) {
+      return 'null';
+    }
+    else {
+      return val.toString();
+    }
+  }
 
   if (attr.integer)
     return Math.trunc(+val);
