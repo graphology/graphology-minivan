@@ -142,7 +142,8 @@ describe('graphology-minivan', function() {
               type: 'ranking-size',
               integer: true,
               areaScaling: {
-                interpolation: 'pow-2'
+                interpolation: 'pow-2',
+                max: 1000,
               }
             },
             {
@@ -175,7 +176,7 @@ describe('graphology-minivan', function() {
         integer: true,
         areaScaling: {
           min: 10,
-          max: 100,
+          max: 1000,
           interpolation: 'pow-2'
         }
       });
