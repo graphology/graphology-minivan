@@ -85,6 +85,7 @@ function loadResource(name) {
 }
 
 var NORDIC_DESIGN = loadResource('nordic-design');
+var CASE = loadResource('case');
 
 describe('graphology-minivan', function() {
   describe('serialization', function() {
@@ -297,6 +298,14 @@ describe('graphology-minivan', function() {
           cardinality: 9
         }
       ]);
+    });
+
+    it('should detect all attributes', function() {
+      var graph = new Graph(CASE.settings);
+      graph.import(CASE.graph);
+
+      var bundle = buildBundle(graph);
+      expect(bundle.model.edgeAttributes.length).to.be.greaterThan(0);
     });
   });
 });

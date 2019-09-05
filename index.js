@@ -719,7 +719,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
     userSpec = userEdgeAttributes && userEdgeAttributes[k];
 
     if (spec.type === 'partition') {
-      if (!userSpec && spec.cardinality < 2) {
+      if (!userSpec && spec.cardinality < 1) {
         delete edgeAttributes[k];
         continue;
       }
