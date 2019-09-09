@@ -160,15 +160,10 @@ function cast(attr, val) {
 
 var USER_SPEC_MERGERS = {
   areaScaling: function(user, defaults) {
-    var toMerge = {};
-
-    if (user.interpolation)
-      toMerge.interpolation = user.interpolation;
-
     return Object.assign(
       {},
       defaults,
-      toMerge
+      user
     );
   }
 };
