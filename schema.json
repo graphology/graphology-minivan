@@ -150,6 +150,17 @@
               {
                 "type": "object",
                 "properties": {
+                  "type": {
+                    "title": "Type of attribute.",
+                    "type": "string",
+                    "enum": ["ignore"]
+                  }
+                }
+              },
+
+              {
+                "type": "object",
+                "properties": {
                   "slug": {
                     "title": "Node attribute's slug. Must be unique and url safe.",
                     "type": "string"
@@ -408,6 +419,17 @@
           "items": {
             "title": "Edge attribute.",
             "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "title": "Type of attribute.",
+                    "type": "string",
+                    "enum": ["ignore"]
+                  }
+                }
+              },
+
               {
                 "type": "object",
                 "properties": {
