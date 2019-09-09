@@ -163,7 +163,7 @@ var USER_SPEC_MERGERS = {
     return Object.assign(
       {},
       defaults,
-      Object.assign({}, user)
+      user
     );
   }
 };
