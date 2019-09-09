@@ -15,6 +15,7 @@ var path = require('path');
 var fs = require('fs-extra');
 var lib = require('../index.js');
 var validate = require('../validate.js');
+var gexf = require('graphology-gexf');
 var Graph = require('graphology');
 
 var buildBundle = lib.buildBundle;
@@ -81,10 +82,21 @@ var GRAPHS = {
 };
 
 function loadResource(name) {
-  return fs.readJSONSync(path.join(__dirname, 'resources', name + '.json'));
+  var p = path.join(__dirname, 'resources', name + '.json');
+
+  return fs.readJSONSync(p);
+}
+
+function loadGexfResource(name) {
+  var p = path.join(__dirname, 'resources', name + '.gexf');
+
+  var xml = fs.readFileSync(p, 'utf-8');
+
+  return gexf.parse(Graph, xml);
 }
 
 var NORDIC_DESIGN = loadResource('nordic-design');
+var ARCTIC = loadGexfResource('arctic');
 
 describe('graphology-minivan', function() {
   describe('serialization', function() {
@@ -229,9 +241,9 @@ describe('graphology-minivan', function() {
 
       assert(!bundle.model.nodeAttributes.some(function(attr) {
         return (
-          attr.key === 'name' ||
-          attr.key === 'homepage' ||
-          attr.key === 'prefixes'
+          (attr.key === 'name' && attr.type !== 'ignore') ||
+          (attr.key === 'homepage' && attr.type !== 'ignore') ||
+          (attr.key === 'prefixes' && attr.type !== 'ignore')
         );
       }));
 
@@ -298,6 +310,26 @@ describe('graphology-minivan', function() {
           cardinality: 9
         }
       ]);
+    });
+
+    it('should be able to process a graph from a gexf file while automatically hiding attributes.', function() {
+      var bundle = buildBundle(ARCTIC);
+
+      var errors = validate(bundle);
+
+      assert(!errors);
+
+      var nodeDefAttribute = bundle.model.nodeAttributes.find(function(attr) {
+        return attr.key === 'nodedef';
+      });
+
+      assert.deepEqual(nodeDefAttribute, {
+        count: 1715,
+        type: 'ignore',
+        key: 'nodedef',
+        label: 'nodedef',
+        slug: 'nodedef'
+      });
     });
   });
 });

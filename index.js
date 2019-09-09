@@ -498,7 +498,13 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
             spec.cardinality >= MAX_PARTITION_CARDINALITY &&
             spec.cardinality >= MAX_PARTITION_CARDINALITY_RATIO * graph.order
           ) {
-            delete nodeAttributes[k];
+            nodeAttributes[k] = {
+              type: 'ignore',
+              count: spec.count,
+              key: spec.key,
+              slug: spec.slug,
+              label: spec.label
+            };
             delete nodePartitionAttributes[k];
             continue;
           }
@@ -605,7 +611,13 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
             spec.cardinality >= MAX_PARTITION_CARDINALITY &&
             spec.cardinality > MAX_PARTITION_CARDINALITY_RATIO * graph.size
           ) {
-            delete edgeAttributes[k];
+            edgeAttributes[k] = {
+              type: 'ignore',
+              count: spec.count,
+              key: spec.key,
+              slug: spec.slug,
+              label: spec.label
+            };
             continue;
           }
 
