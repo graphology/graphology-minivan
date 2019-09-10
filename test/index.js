@@ -348,5 +348,33 @@ describe('graphology-minivan', function() {
 
       assert.strictEqual(bundle.model.nodeAttributes[0].type, 'partition');
     });
+
+    it('should respect the ignore hints.', function() {
+      var graph = UndirectedGraph.from(GRAPHS.basic);
+
+      var bundle = buildBundle(graph, {
+        model: {
+          nodeAttributes: [
+            {
+              key: 'nb',
+              type: 'ignore'
+            },
+            {
+              key: 'centrality',
+              type: 'ignore'
+            },
+            {
+
+              key: 'category',
+              type: 'ignore'
+            }
+          ]
+        }
+      });
+
+      assert(bundle.model.nodeAttributes.every(function(attr) {
+        return attr.type === 'ignore';
+      }));
+    });
   });
 });

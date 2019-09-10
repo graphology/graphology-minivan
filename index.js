@@ -32,6 +32,7 @@ var EDGE_ATTRIBUTES_TO_IGNORE = new Set([
   'color'
 ]);
 
+// TODO: use this to validate hints
 // var VALID_ATTR_TYPES = new Set([
 //   'ignore',
 //   'partition',
