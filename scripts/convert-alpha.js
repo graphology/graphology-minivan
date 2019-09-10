@@ -3,6 +3,7 @@
 var validate = require('../validate.js');
 var stats = require('simple-statistics');
 var slugify = require('../slugify.js');
+var values = require('lodash/values');
 
 var extent = stats.extent;
 
@@ -17,6 +18,23 @@ function rename(k1, k2, o) {
     delete o[k1];
   }
 }
+
+function frequencySorter(a, b) {
+  if (a.count > b.count)
+    return -1;
+
+  if (a.count < b.count)
+    return 1;
+
+  if (a.value < b.value)
+    return -1;
+
+  if (a.value > b.value)
+    return 1;
+
+  return 0;
+}
+
 
 var bundle = require(process.argv.slice(-1)[0]);
 
@@ -78,7 +96,7 @@ if (bundle.nodeAttributes) {
         type: 'partition',
         modalities: {},
         stats: {
-          modularity: attr.data.stats.modularity
+          modularity: data.stats.modularity
         }
       };
 
@@ -112,6 +130,12 @@ if (bundle.nodeAttributes) {
           flow: flow
         };
       });
+
+      attr.modalitiesOrder = values(attr.modalities)
+        .sort(frequencySorter)
+        .map(function(modalityItem) {
+          return modalityItem.value;
+        });
     }
 
     // Dropping redundancy
@@ -179,6 +203,12 @@ if (bundle.edgeAttributes) {
           edges: m.count
         };
       });
+
+      attr.modalitiesOrder = values(attr.modalities)
+        .sort(frequencySorter)
+        .map(function(modalityItem) {
+          return modalityItem.value;
+        });
     }
 
     // Dropping redundancy

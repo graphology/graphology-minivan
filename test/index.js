@@ -376,5 +376,35 @@ describe('graphology-minivan', function() {
         return attr.type === 'ignore';
       }));
     });
+
+    it('should respect modalities order given by user.', function() {
+      var graph = UndirectedGraph.from(GRAPHS.basic);
+
+      var bundle = buildBundle(graph);
+
+      var ordering = bundle.model.nodeAttributes.find(function(attr) {
+        return attr.key === 'category';
+      }).modalitiesOrder;
+
+      assert.deepEqual(ordering, ['fruit', 'vegetable']);
+
+      bundle = buildBundle(graph, {
+        model: {
+          nodeAttributes: [
+            {
+              key: 'category',
+              type: 'partition',
+              modalitiesOrder: ['vegetable', 'fruit']
+            }
+          ]
+        }
+      });
+
+      ordering = bundle.model.nodeAttributes.find(function(attr) {
+        return attr.key === 'category';
+      }).modalitiesOrder;
+
+      assert.deepEqual(ordering, ['vegetable', 'fruit']);
+    });
   });
 });

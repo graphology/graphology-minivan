@@ -232,6 +232,22 @@ function findSuitableDefaultColorAndSize(attributes) {
   };
 }
 
+function frequencySorter(a, b) {
+  if (a.count > b.count)
+    return -1;
+
+  if (a.count < b.count)
+    return 1;
+
+  if (a.value < b.value)
+    return -1;
+
+  if (a.value > b.value)
+    return 1;
+
+  return 0;
+}
+
 /**
  * Helper function used to perform type inference of nodes & edges attributes.
  * This is useful to automatically assess which kind of attribute visual
@@ -644,7 +660,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
    * Final aggregations.
    * ---------------------------------------------------------------------------
    */
-  var modality, palette, nd, m, p;
+  var modality, palette, ordering, nd, m, p;
 
   for (k in nodeAttributes) {
     spec = nodeAttributes[k];
@@ -725,6 +741,21 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
           modality.color = DEFAULT_COLOR_DARK;
         }
       }
+
+      // Modalities ordering
+      if (userSpec && userSpec.modalitiesOrder) {
+        // TODO: check that user did not forget modalities
+        spec.modalitiesOrder = userSpec.modalitiesOrder;
+      }
+      else {
+        ordering = objectValues(spec.modalities)
+          .sort(frequencySorter)
+          .map(function(modalityItem) {
+            return modalityItem.value;
+          });
+
+        spec.modalitiesOrder = ordering;
+      }
     }
   }
 
@@ -763,6 +794,21 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
         else {
           modality.color = DEFAULT_COLOR_BRIGHT;
         }
+      }
+
+      // Modalities ordering
+      if (userSpec && userSpec.modalitiesOrder) {
+        // TODO: check that user did not forget modalities
+        spec.modalitiesOrder = userSpec.modalitiesOrder;
+      }
+      else {
+        ordering = objectValues(spec.modalities)
+          .sort(frequencySorter)
+          .map(function(modalityItem) {
+            return modalityItem.value;
+          });
+
+        spec.modalitiesOrder = ordering;
       }
     }
   }
