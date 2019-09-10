@@ -348,6 +348,14 @@
                       }
                     }
                   },
+                  "modalitiesOrder": {
+                    "title": "Display order of the attribute's modalities.",
+                    "type": "array",
+                    "items": {
+                      "title": "Attribute's modality key.",
+                      "type": "string"
+                    }
+                  },
                   "modalities": {
                     "title": "The attribute's modalities in case of partition.",
                     "type": "object",
@@ -625,6 +633,14 @@
                   "cardinality": {
                     "title": "Number of modalities.",
                     "type": "number"
+                  },
+                  "modalitiesOrder": {
+                    "title": "Display order of the attribute's modalities.",
+                    "type": "array",
+                    "items": {
+                      "title": "Attribute's modality key.",
+                      "type": "string"
+                    }
                   },
                   "modalities": {
                     "title": "The attribute's modalities in case of partition.",
