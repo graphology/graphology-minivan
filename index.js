@@ -404,7 +404,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
 
       nodePartitionAttributes[k] = spec;
     }
-    else {
+    else if (attrType !== 'ignore') {
       spec.min = Infinity;
       spec.max = -Infinity;
       spec.integer = userSpecOrDefault(userSpec, 'integer', type === 'integer');
@@ -449,7 +449,7 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
       spec.cardinality = 0;
       spec.modalities = {};
     }
-    else {
+    else if (attrType !== 'ignore') {
       spec.min = Infinity;
       spec.max = -Infinity;
       spec.integer = userSpecOrDefault(userSpec, 'integer', type === 'integer');

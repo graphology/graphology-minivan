@@ -10,6 +10,7 @@ chai.use(require('chai-roughly'));
 var assert = chai.assert;
 var expect = chai.expect;
 var deepclone = require('lodash/cloneDeep');
+var range = require('lodash/range');
 
 var path = require('path');
 var fs = require('fs-extra');
@@ -330,6 +331,22 @@ describe('graphology-minivan', function() {
         label: 'nodedef',
         slug: 'nodedef'
       });
+    });
+
+    it('should respect hints, albeit against its own heuristics.', function() {
+      var graph = new UndirectedGraph();
+
+      range(100).forEach(function(i) {
+        graph.addNode(i, {ref: '' + i});
+      });
+
+      var bundle = buildBundle(graph);
+
+      assert.strictEqual(bundle.model.nodeAttributes[0].type, 'ignore');
+
+      bundle = buildBundle(graph, {model: {nodeAttributes: [{key: 'ref', type: 'partition'}]}});
+
+      assert.strictEqual(bundle.model.nodeAttributes[0].type, 'partition');
     });
   });
 });
