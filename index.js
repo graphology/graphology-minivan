@@ -673,10 +673,16 @@ exports.buildBundle = function buildBundle(graph, hints, settings) {
               (2 * graph.size)
             );
 
+            if (isNaN(modality.flow[vf].expected))
+              modality.flow[vf].expected = 0;
+
             nd = (
               (modality.flow[vf].count - modality.flow[vf].expected) /
               (4 * graph.size)
             );
+
+            if (isNaN(nd))
+              nd = 0;
 
             modality.flow[vf].normalizedDensity = nd;
 
