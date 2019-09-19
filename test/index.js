@@ -407,4 +407,26 @@ describe('graphology-minivan', function() {
       assert.deepEqual(ordering, ['vegetable', 'fruit']);
     });
   });
+
+  describe('helpers', function() {
+    it('should be possible to use standalone type inference.', function() {
+      var graph = UndirectedGraph.from(GRAPHS.basic);
+
+      var inference = lib.performTypeInference(graph);
+
+      assert.deepEqual(inference, {
+        nodes: {
+          nb: 'integer',
+          centrality: 'float',
+          color: 'string',
+          category: 'string'
+        },
+        edges: {
+          weight: 'float',
+          cardinality: 'integer',
+          predicate: 'string'
+        }
+      });
+    });
+  });
 });

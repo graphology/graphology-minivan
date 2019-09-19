@@ -285,6 +285,38 @@ function performTypeInference(items, whiteList, ignore, sampleSize) {
   return inference;
 }
 
+// Exporting a convenient version of type inference
+exports.performTypeInference = function(graph, options) {
+  options = options || {};
+
+  var ignore = new Set();
+
+  var sampleSize = options.sampleSize || DEFAULT_TYPE_INFERENCE_SAMPLE_SIZE;
+
+  var nodes = graph.nodes().slice(0, sampleSize).map(function(key) {
+    return graph.exportNode(key);
+  });
+
+  var edges = graph.edges().slice(0, sampleSize).map(function(key) {
+    return graph.exportEdge(key);
+  });
+
+  return {
+    nodes: performTypeInference(
+      nodes,
+      null,
+      ignore,
+      sampleSize
+    ),
+    edges: performTypeInference(
+      edges,
+      null,
+      ignore,
+      sampleSize
+    )
+  };
+};
+
 /**
  * Function taking a graphology Graph instance, hint & some settings and
  * returning a viable MiniVan bundle ready to stringify.
